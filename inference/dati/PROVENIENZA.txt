@@ -4,7 +4,8 @@ I file di dati di questa cartella sono DERIVATI da due dataset
 accademici di terzi. Chi li usa o li ridistribuisce è tenuto alle condizioni qui sotto.
 
 NF-UNSW-NB15-v3   (versione NetFlow di UNSW-NB15; sorgente di inferenza/unsw_test_raw.csv,
-                   inferenza/unsw_benigni.csv e benchmark/unsw_bench_50k.csv)
+                   inferenza/unsw_benigni.csv, benchmark/unsw_bench_50k.csv,
+                   addestramento/unsw_train_raw.csv e unsw_train_contam1_raw.csv)
 
   fonte    : The University of Queensland — doi: 10.48610/6e0eda1
              https://espace.library.uq.edu.au/view/UQ:6e0eda1
@@ -22,7 +23,7 @@ NF-UNSW-NB15-v3   (versione NetFlow di UNSW-NB15; sorgente di inferenza/unsw_tes
 
 
 NF-CSE-CIC-IDS2018-v3  (versione NetFlow di CSE-CIC-IDS2018; sorgente dei set CSE di questa
-                        cartella, rigenerabili e non distribuiti)
+                        cartella: inferenza/cse_test_raw.csv e cse_benigni.csv)
 
   fonte    : The University of Queensland — doi: 10.48610/ece9b83
 
@@ -62,10 +63,13 @@ Lavori di riferimento del formato NetFlow usato da entrambi:
 
 
 AMBITO DELLA LICENZA MIT DEL REPOSITORY
-  Il file LICENSE in radice è una licenza MIT e copre il CODICE di questo repository.
-  NON si applica ai file derivati dai dataset qui sopra, che restano soggetti ai termini
-  dei rispettivi titolari: inferenza/unsw_test_raw.csv, inferenza/unsw_benigni.csv e
-  benchmark/unsw_bench_50k.csv.
+  Il file LICENSE (in radice e, identico, in inference/) è una licenza MIT per il CODICE di
+  questo repository; in coda riporta i termini dei dataset co-rilasciati. La MIT NON si
+  applica ai file derivati dai dataset qui sopra, che restano soggetti ai termini dei
+  rispettivi titolari: inferenza/unsw_test_raw.csv, inferenza/unsw_benigni.csv,
+  benchmark/unsw_bench_50k.csv, gli archivi inferenza/cse_test_raw.csv.7z,
+  addestramento/unsw_train_raw.csv.7z e addestramento/unsw_train_contam1_raw.csv.7z,
+  e i CSV che se ne ricavano.
 
 == inferenza/ (ex test/) ==
 
@@ -161,22 +165,28 @@ provenienza ma NON fanno parte del bundle consegnato (cattura privata dell'autor
 
 
 
-== Rigenerazione dei file non distribuiti nel repository (2026-09-08) ==
+== Dataset oltre i 100 MB (aggiornato il 2026-09-23) ==
 
-I quattro dataset CSE/UNSW sopra i 100 MB non sono nel repository pubblico. Si rigenerano con
+I quattro dataset CSE/UNSW oltre i 100 MB sono nel repository come archivi .7z (LZMA2) accanto
+alla loro posizione; cse_benigni.csv non ha archivio perché si ricava da cse_test_raw.csv.
+Si scompattano, con verifica degli sha256 qui sotto, con
+
+  bash inference/install.sh dati
+
+In alternativa si rigenerano dalle sorgenti con
 
   bash inference/dati/rigenera_dataset_grandi.sh [cse_test|cse_benigni|unsw_train|unsw_contam|tutto]
 
 che verifica ogni file contro gli sha256 di questo documento (fallimento bloccante):
-  inference/cse_test_raw.csv            tools/make_cse_test_raw.py sugli artefatti del preprocessing CSE
+  inferenza/cse_test_raw.csv            tools/make_cse_test_raw.py sugli artefatti del preprocessing CSE
                                         sha256 7ab7a0430894b9466efa2ac4d84cb7cb31954d2a8f1ed6f3877ccb041047d68a
-  inference/cse_benigni.csv             righe Label=0 di cse_test_raw.csv (colonna 54), intestazione conservata
+  inferenza/cse_benigni.csv             righe Label=0 di cse_test_raw.csv (colonna 54), intestazione conservata
                                         sha256 dc42312cbd8b7ce4114616b76611839243da1c91a61d666769b46bb08ab18787
-  data/raw/unsw_train_raw.csv      NESSUN generatore fra i tool: archivio, porzione di addestramento
+  addestramento/unsw_train_raw.csv      NESSUN generatore fra i tool: archivio, porzione di addestramento
                                         (Label=0, 1.778.334 righe) del CSV grezzo NF-UNSW-NB15-v3 nel formato
                                         nProbe a 55 colonne, secondo lo split della pipeline di preprocessing
                                         sha256 fbf16e272046f7c2b0fee753d66e5c9b34dd345f5ca5a888f3e5d76c04a6308f
-  data/raw/unsw_train_contam1_raw.csv  tools/make_unsw_contaminated.py (rng(0)) da unsw_train_raw.csv,
+  addestramento/unsw_train_contam1_raw.csv  tools/make_unsw_contaminated.py (rng(0)) da unsw_train_raw.csv,
                                         data/raw/NF-UNSW-NB15-v3.csv e inferenza/unsw_test_raw.csv
                                         sha256 debe648f35c824aaad8d9fb7c1eb613c0ce7d24d84124905fee016ccfa86c15f
 I tre file della cattura LAN privata (addestramento/lan_train_raw.csv, addestramento/lan_contaminato.csv,

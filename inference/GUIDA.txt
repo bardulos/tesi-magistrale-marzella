@@ -4,19 +4,24 @@ Rileva flussi anomali nei CSV di nProbe (NetFlow v3); per ogni allarme indica
 le feature responsabili. Solo CPU.
 
 CONTENUTO
-  install.sh    crea infer_venv (inferenza, numpy) e train_venv (TensorFlow)
+  install.sh    crea i venv e scompatta i dataset .7z di dati/
   main.py       menu interattivo; usa da sé il venv giusto
   infer.py      inferenza
   train.py      riaddestramento di un seme
-  dati/         CSV: inferenza/  benchmark/  addestramento/ (da creare)
+  dati/         CSV: inferenza/  addestramento/  benchmark/ (i grandi in .7z)
   modelli/      produzione/  sperimentali/
   sniffing/     cattura.sh (nProbe), unione.sh (unisce i CSV di sniffing/csv/)
 
 INSTALLAZIONE
-  bash install.sh [infer|train|all]    senza argomenti chiede per ogni venv
-  Richiede python3.12. infer.py e train.py si lanciano col Python del venv:
-    infer_venv/bin/python infer.py ...
-    train_venv/bin/python train.py ...
+  bash install.sh [infer|train|dati|all]    senza argomenti chiede per ognuno
+    infer   infer_venv (inferenza, numpy)
+    train   train_venv (riaddestramento, TensorFlow)
+    dati    scompatta i dataset .7z di dati/ e ne verifica gli sha256;
+            serve 7z (sudo apt install p7zip-full)
+  Richiede python3.12. Dopo l'installazione ./infer.py e ./train.py usano il
+  Python del proprio venv (install.sh ne riscrive la prima riga).
+  Su Windows gli archivi .7z si aprono con 7-Zip o, su Windows 11, con
+  Esplora file.
 
 MENU
   python main.py [--n-seeds N]
@@ -34,8 +39,7 @@ INFERENZA
                       incluso
     --batch FILE      analizza un CSV nProbe esistente
     --test            metriche su dati/inferenza/<modello>_test_raw.csv,
-                      nessun allarme; nel pacchetto c'è solo il test unsw
-                      (cse: dati/rigenera_dataset_grandi.sh)
+                      nessun allarme (il test cse dopo install.sh dati)
     --mode A|B        modalità d'allarme (default A)
     --model NOME      modello in modelli/produzione/ o modelli/sperimentali/
                       (default: modelli/active_dataset.txt, poi cse;
@@ -65,7 +69,8 @@ RIADDESTRAMENTO
   poi:
     infer.py --batch FILE.csv --model NOME
 
-    --dataset FILE     CSV nProbe grezzo del traffico locale
+    --dataset FILE     CSV nProbe grezzo del traffico locale (esempio:
+                       dati/addestramento/unsw_train_contam1_raw.csv)
     --out-dir DIR      cartella del modello: deve esistere, sotto
                        modelli/sperimentali/ (infer.py cerca solo lì e in
                        modelli/produzione/)

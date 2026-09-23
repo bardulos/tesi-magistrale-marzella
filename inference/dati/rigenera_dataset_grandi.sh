@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Rigenerazione dei quattro dataset CSE/UNSW non distribuiti nel repository (sopra i 100 MB):
+# Rigenerazione dalle sorgenti dei quattro dataset CSE/UNSW oltre i 100 MB:
 #   inferenza/cse_test_raw.csv, inferenza/cse_benigni.csv,
 #   addestramento/unsw_train_raw.csv, addestramento/unsw_train_contam1_raw.csv
+# Nel repository sono distribuiti come archivi .7z (cse_benigni si ricava da cse_test_raw) e si
+# scompattano con install.sh dati: questo script serve solo a rigenerarli dalle sorgenti.
 # Per ciascuno: derivazione dichiarata, comando che la esegue quando le sorgenti sono presenti,
 # verifica bloccante dello sha256 contro PROVENIENZA.txt. I tre file della cattura LAN privata
 # (lan_*.csv) sono [NON DISTRIBUITO] e non si rigenerano. Uso, dalla radice del repository:

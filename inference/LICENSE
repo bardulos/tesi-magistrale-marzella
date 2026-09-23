@@ -1,0 +1,72 @@
+MIT License
+
+Copyright (c) 2026 Alessandro Felice Marzella (bardulos)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+DATASETS DISTRIBUTED WITH THIS REPOSITORY
+
+The MIT License above covers the source code only. The data files listed below
+are derived from third-party academic datasets and are NOT licensed under the
+MIT License: they remain subject to the terms of their owners, summarised here.
+Details and full references: inference/dati/PROVENIENZA.txt.
+
+1. Derived from NF-UNSW-NB15-v3
+     inference/dati/inferenza/unsw_test_raw.csv
+     inference/dati/inferenza/unsw_benigni.csv
+     inference/dati/benchmark/unsw_bench_50k.csv
+     inference/dati/addestramento/unsw_train_raw.csv.7z
+     inference/dati/addestramento/unsw_train_contam1_raw.csv.7z
+   Source: The University of Queensland, doi: 10.48610/6e0eda1, derived from
+   UNSW-NB15 (UNSW Canberra).
+   Terms of the authors (verbatim, typos in the original): "The use of the
+   datasets for academic research purpuses is granted in perpetuity after
+   citing the above papers. For commerical purposes it should be agreed by the
+   authours."
+   Use is therefore limited to academic research; commercial use requires the
+   agreement of the authors. Cite:
+     Luay, Majed, Layeghy, Siamak, Mohanad, Sarhan, Sayedehfaezeh,
+     Hoseininoorbin, Moustafa, Nour and Portmann, Marius (2025).
+     NF-UNSW-NB15-v3. The University of Queensland. (Dataset)
+     doi: 10.48610/6e0eda1
+     Moustafa, N. and Slay, J. (2015). UNSW-NB15: a comprehensive data set for
+     network intrusion detection systems. MilCIS, IEEE.
+   and the reference papers listed in inference/dati/PROVENIENZA.txt.
+
+2. Derived from NF-CSE-CIC-IDS2018-v3
+     inference/dati/inferenza/cse_test_raw.csv.7z
+     (and inference/dati/inferenza/cse_benigni.csv, obtained from it)
+   Source: The University of Queensland, doi: 10.48610/ece9b83, derived from
+   CSE-CIC-IDS2018 (Communications Security Establishment and Canadian
+   Institute for Cybersecurity).
+   Terms of the owners (verbatim, excerpt): "You may redistribute, republish,
+   and mirror the CSE-CIC-IDS2018 dataset in any form. [...] any use or
+   redistribution of the data must include a citation to the CSE-CIC-IDS2018
+   dataset and a link to this page in AWS":
+     https://registry.opendata.aws/cse-cic-ids2018/
+   Cite:
+     Iman Sharafaldin, Arash Habibi Lashkari and Ali A. Ghorbani, "Toward
+     Generating a New Intrusion Detection Dataset and Intrusion Traffic
+     Characterization", 4th International Conference on Information Systems
+     Security and Privacy (ICISSP), Portugal, January 2018.
+     Luay, Majed, Layeghy, Siamak, Mohanad, Sarhan, Sayedehfaezeh,
+     Hoseininoorbin, Moustafa, Nour and Portmann, Marius (2025).
+     NF-CSE-CIC-IDS2018-v3. The University of Queensland. (Dataset)
+     doi: 10.48610/ece9b83

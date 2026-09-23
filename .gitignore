@@ -30,14 +30,13 @@ __pycache__/
 /runs/*
 !/runs/README.txt
 
-# Dataset del pacchetto di inferenza oltre il limite di 100 MB di GitHub:
-# si rigenerano con inference/dati/rigenera_dataset_grandi.sh, sha256 in PROVENIENZA.txt
+# Dataset oltre il limite di 100 MB di GitHub: nel repository ci sono gli archivi .7z accanto
+# alla loro posizione; i CSV scompattati da inference/install.sh (e i .tmp) restano fuori
 /inference/dati/inferenza/cse_test_raw.csv
 /inference/dati/inferenza/cse_benigni.csv
-/inference/dati/addestramento/unsw_train_contam1_raw.csv
-
-# Non rigenerabile: provenienza e sha256 in inference/dati/PROVENIENZA.txt
 /inference/dati/addestramento/unsw_train_raw.csv
+/inference/dati/addestramento/unsw_train_contam1_raw.csv
+/inference/dati/**/*.tmp
 
 # Cattura di rete privata: non distribuita
 /inference/dati/addestramento/lan_contaminato.csv
