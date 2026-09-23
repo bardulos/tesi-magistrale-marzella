@@ -1,0 +1,33 @@
+# configs/secondo_stadio/fusione.yaml — valutazione della fusione AND∪logit (P7, cap3).
+#
+# STATUS ILLUSTRATIVE: eseguibile solo col finalista congelato (GATE D: pa_weights,
+# model_config) e mlp_fixed dal vincitore P1 (GATE B). QUESTO STAGE INTERROGA IL TEST
+# (valutazione finale dichiarata): il lancio richiede il GATE E sui punti operativi.
+status: illustrative
+
+stage: fusione
+out_dir: runs/secondo_stadio/fusione
+
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+labels_test: runs/preprocessing/test_npy/test_Attack.npy
+l1l2_csv: runs/dae/output_569/l1l2_table.csv   # tau_dae, sorgente unica
+
+# ---- Finalista #589, seme di produzione 2037 (GATE D compilato 2026-07-06) ----
+pa_weights: runs/secondo_stadio/weights_final/21a2e100/seed_2037/best.weights.h5
+model_config:
+  exp: 3.928824460722608
+  n_layers: 2
+  ratio: 0.6159888054811458
+  dropout: 0.27477804731454736
+  delta: 0.09261080547245101
+  alpha_lo: 1.9481223527402847
+  alpha_hi: 3.079948793054766
+mlp_fixed:
+  ratio: 0.6
+  lr: 0.0005
+  dropout: 0.1
+  l2_reg: 1.0819231482664046e-06
+
+alpha_and: 0.005
+dump_scores_npz: runs/secondo_stadio/fusione/scores.npz   # input di ablazione + figure

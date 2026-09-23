@@ -1,0 +1,48 @@
+# --- Python ed editor ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.hypothesis/
+*venv*/
+.env
+.vscode/
+.idea/
+
+# Output grezzo di GNU time dei benchmark: ausiliari e ignorabili; contengono i percorsi della
+# macchina di misura
+/inference/benchmarks/.time_*.txt
+
+# --- Log ---
+*.log
+*.log.*
+# eccezione: i log di addestramento nelle cartelle dei modelli ne documentano
+# la catena label-free e sono parte del modello
+!/inference/modelli/**/train.log
+
+# --- Dati: rigenerabili dalla pipeline, fuori per dimensione ---
+/data/raw/*
+!/data/raw/COME_RECUPERARE.txt
+/data/dae_data_91/*
+!/data/dae_data_91/COME_RIGENERARE.txt
+/data/parquet/*
+!/data/parquet/COME_RIGENERARE.txt
+/runs/*
+!/runs/README.txt
+
+# Dataset del pacchetto di inferenza oltre il limite di 100 MB di GitHub:
+# si rigenerano con inference/dati/rigenera_dataset_grandi.sh, sha256 in PROVENIENZA.txt
+/inference/dati/inferenza/cse_test_raw.csv
+/inference/dati/inferenza/cse_benigni.csv
+/inference/dati/addestramento/unsw_train_contam1_raw.csv
+
+# Non rigenerabile: provenienza e sha256 in inference/dati/PROVENIENZA.txt
+/inference/dati/addestramento/unsw_train_raw.csv
+
+# Cattura di rete privata: non distribuita
+/inference/dati/addestramento/lan_contaminato.csv
+/inference/dati/addestramento/lan_train_raw.csv
+/inference/dati/inferenza/lan_test_raw.csv
+/inference/sniffing/staging/
+/inference/sniffing/csv/
+/inference/flussi_per_file.txt

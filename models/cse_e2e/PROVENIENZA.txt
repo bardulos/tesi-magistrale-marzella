@@ -1,0 +1,10 @@
+models/cse_e2e/ - modello CSE addestrato senza etichette (deploy), seme 46
+
+  dae.npz              pesi del DAE (primo stadio)
+  pa.npz               pesi del classificatore (secondo stadio) e parametri di
+                       normalizzazione del suo ingresso
+  soglie.json          soglie di fusione delle modalità A e B
+  feature_order.json   ordine delle feature (continue e binarie)
+  scaler_params.json   parametri di scala per feature
+  transform_meta.json  trasformazioni del preprocessing (log, troncamenti)
+  train_report.json    rapporto di addestramento: arresti, pool, FPR sul monitor

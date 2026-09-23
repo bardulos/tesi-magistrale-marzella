@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# install.sh — setup della macchina target per il pacchetto NIDS a 2 stadi (repov6, cap4).
+# Crea i due virtualenv co-locati nella cartella del pacchetto, ENTRAMBI Python 3.12:
+#   infer_venv (Python 3.12, solo numpy)                 -> inferenza (infer.py)
+#   train_venv (Python 3.12, TensorFlow + scikit-learn)  -> retrain locale (train.py)
+# Sono separati perche' a runtime l'inferenza e' NumPy-pura (nessun framework pesante), mentre il
+# training usa TensorFlow+sklearn. L'inferenza e' MONOPROCESSO a thread Python singolo: l'unico
+# parallelismo e' quello interno del BLAS sulle matmul. Le versioni sono PINNATE nei requirements.
+#
+#   bash install.sh          INTERATTIVO: chiede s/n prima di OGNI venv (default)
+#   bash install.sh infer    installa solo infer_venv, senza chiedere
+#   bash install.sh train    installa solo train_venv, senza chiedere
+#   bash install.sh all      installa entrambi, senza chiedere
+# Output su console + install.log.
+set -euo pipefail
+MODE="${1:-ask}"
+case "$MODE" in
+    ask|infer|train|all) ;;
+    *) echo "ERRORE: modalita' '$MODE' non valida. Usa: bash install.sh [ask|infer|train|all]"; exit 1 ;;
+esac
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+ask_yn() {   # $1 = domanda; default SI (INVIO); ritorna 0=si, 1=no
+    local r
+    read -r -p "$1 [S/n]: " r || true
+    case "${r,,}" in n|no) return 1 ;; *) return 0 ;; esac
+}
+
+# Decide COSA installare PRIMA di avviare il log su file, cosi' i prompt vanno diretti al terminale.
+do_infer=0; do_train=0
+case "$MODE" in
+    infer) do_infer=1 ;;
+    train) do_train=1 ;;
+    all)   do_infer=1; do_train=1 ;;
+    ask)
+        ask_yn "Installare infer_venv (inferenza, Python 3.12 + numpy)?" && do_infer=1
+        ask_yn "Installare train_venv (training, TensorFlow + scikit-learn)?" && do_train=1
+        ;;
+esac
+if [ "$do_infer" = 0 ] && [ "$do_train" = 0 ]; then
+    echo "Niente da installare."
+    exit 0
+fi
+
+exec > >(tee -a "$DIR/install.log") 2>&1
+echo "==> install (infer=$do_infer train=$do_train) $(LC_ALL=C date -u +%Y-%m-%dT%H:%M:%SZ) in $DIR"
+PY312="${PY312:-python3.12}"
+
+# 1. venv di INFERENZA (numpy-only, Python 3.12)
+if [ "$do_infer" = 1 ]; then
+    command -v "$PY312" >/dev/null || { echo "ERRORE: $PY312 non trovato"; exit 1; }
+    [ -x "$DIR/infer_venv/bin/python" ] || "$PY312" -m venv "$DIR/infer_venv"
+    "$DIR/infer_venv/bin/pip" install --quiet --upgrade pip
+    "$DIR/infer_venv/bin/pip" install --quiet -r "$DIR/requirements.txt"
+    echo "==> infer_venv: $("$DIR/infer_venv/bin/python" -c 'import sys,numpy;print("Python",sys.version.split()[0],"| numpy",numpy.__version__)')"
+    sed -i "1s|.*|#!$DIR/infer_venv/bin/python|" "$DIR/infer.py"
+    chmod +x "$DIR/infer.py"
+fi
+
+# 2. venv di TRAINING (TF+sklearn, Python 3.12)
+if [ "$do_train" = 1 ]; then
+    command -v "$PY312" >/dev/null || { echo "ERRORE: $PY312 non trovato"; exit 1; }
+    [ -x "$DIR/train_venv/bin/python" ] || "$PY312" -m venv "$DIR/train_venv"
+    "$DIR/train_venv/bin/pip" install --quiet --upgrade pip
+    "$DIR/train_venv/bin/pip" install --quiet -r "$DIR/requirements_train.txt"
+    echo "==> train_venv: $("$DIR/train_venv/bin/python" -c 'import sys;print("Python",sys.version.split()[0])')"
+    sed -i "1s|.*|#!$DIR/train_venv/bin/python|" "$DIR/train.py"
+    chmod +x "$DIR/train.py"
+fi
+
+# 3. cartelle di lavoro della cattura nProbe
+mkdir -p "$DIR/sniffing/csv" "$DIR/sniffing/staging" "$DIR/sniffing/log"
+
+# 4. nProbe demo (opzionale): installa i .deb locali + setcap per catturare senza root
+if ls "$DIR/nprobe_demo/"*.deb >/dev/null 2>&1; then
+    echo "==> nProbe demo: dpkg -i + setcap (richiede sudo)"
+    sudo dpkg -i "$DIR/nprobe_demo/"*.deb || sudo apt-get -f install -y
+    NB="$(command -v nprobe || true)"
+    [ -n "$NB" ] && sudo setcap cap_net_raw,cap_net_admin+eip "$NB"
+else
+    echo "==> nProbe demo assente: --live richiede nProbe installato a parte (l'inferenza su CSV/batch funziona comunque)"
+fi
+
+echo "==> FATTO."
+echo "    menu:       python main.py    (interattivo, consigliato)"
+echo "    inferenza:  ./infer.py --batch traffico.csv --mode A --model cse   (A=FPR minimo, B=alta recall)"
+echo "    retrain:    ./train.py --dataset traffico_locale.csv --out-dir modelli/sperimentali/lan_seed42 --seed 42"

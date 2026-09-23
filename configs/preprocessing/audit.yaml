@@ -1,0 +1,8 @@
+# Audit: 7 analisi statistiche post-reduce su CSE, con UNSW come confronto
+# distribuzionale (test 5: Wasserstein/KS sui benigni).
+stage: audit
+
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+compare: runs/preprocessing/reduce_unsw/unsw_post_audit.parquet
+out_dir: runs/preprocessing/audit_cse

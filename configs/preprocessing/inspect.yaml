@@ -1,0 +1,6 @@
+# Inspect: per-column stats sul CSV grezzo di un singolo dataset.
+# Default CSE, override --override dataset=unsw per UNSW.
+stage: inspect
+
+dataset: cse
+out_dir: runs/preprocessing/inspect_cse

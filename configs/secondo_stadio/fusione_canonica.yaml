@@ -1,0 +1,18 @@
+# configs/secondo_stadio/fusione_canonica.yaml — regola canonica del cap3 (tre rami, due
+# modalita' A/B: A = regola della tesi e default, due rami con punto operativo unico; B =
+# alternativa a tre rami, valutata e non adottata). Sostituisce la v1 (fusione.yaml, due rami
+# AND+union, DEPRECATA — v. lib/secondo_stadio/fusione.py FUSION_PRESETS).
+#
+# Riusa gli score gia' dumpati dallo stage `fusione` (scores.npz, dump_scores_npz=true in
+# fusione.yaml): NESSUN forward aggiuntivo. Le soglie (tau_dae, tau_hi) NON sono qui: sono la
+# RICETTA (percentili p97/p99/p99.8 dei benigni-select, F.FUSION_MODES) — si derivano dagli
+# score, non si congelano nel config. Scrive results_canonico.json in out_dir (mai
+# results.json/results_v2.json: artefatti congelati contro cui questo stage si verifica).
+#
+# Gate di riproduzione (2026-07-11): bit-exact su fpr_test/recall_test/mcc_bal_test per
+# entrambe le modalita' contro runs/secondo_stadio/fusione/results_v2.json.
+status: active
+
+stage: fusione_canonica
+out_dir: runs/secondo_stadio/fusione
+scores_npz: runs/secondo_stadio/fusione/scores.npz

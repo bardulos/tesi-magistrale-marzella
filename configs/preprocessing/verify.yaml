@@ -1,0 +1,12 @@
+# Verify: duplicati + stats + heatmap + robustezza (se scaler_params + transform_meta).
+# Default CSE; per UNSW override primary + out_dir (schema_from resta CSE).
+stage: verify
+
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+out_dir: runs/preprocessing/verify_cse
+scaler_params: runs/preprocessing/transform_cse/scaler_params.json
+transform_meta: runs/preprocessing/transform_cse/transform_meta.json
+# encode_primary: barra +SRC_PORT (srcport_dup_pct_benign); raw_primary: continue pre-audit (heatmap pre).
+encode_primary: runs/preprocessing/encode_cse/cse_encoded.parquet
+raw_primary: data/parquet/cse_raw.parquet

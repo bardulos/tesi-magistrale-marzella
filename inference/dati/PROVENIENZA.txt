@@ -1,0 +1,183 @@
+== DATASET A MONTE: FONTE, TERMINI D'USO E CITAZIONE OBBLIGATORIA ==
+
+I file di dati di questa cartella sono DERIVATI da due dataset
+accademici di terzi. Chi li usa o li ridistribuisce è tenuto alle condizioni qui sotto.
+
+NF-UNSW-NB15-v3   (versione NetFlow di UNSW-NB15; sorgente di inferenza/unsw_test_raw.csv,
+                   inferenza/unsw_benigni.csv e benchmark/unsw_bench_50k.csv)
+
+  fonte    : The University of Queensland — doi: 10.48610/6e0eda1
+             https://espace.library.uq.edu.au/view/UQ:6e0eda1
+
+  pagine   : https://staff.itee.uq.edu.au/marius/NIDS_datasets/
+             https://www.cyber.uq.edu.au/project/machine-learning-based-nids-datasets
+
+  citare   : Luay, Majed, Layeghy, Siamak, Mohanad, Sarhan, Sayedehfaezeh, Hoseininoorbin,
+             Moustafa, Nour and Portmann, Marius (2025). NF-UNSW-NB15-v3. The University
+             of Queensland. (Dataset) doi: 10.48610/6e0eda1
+
+  a monte  : UNSW-NB15, UNSW Canberra — Moustafa, N. e Slay, J. (2015). UNSW-NB15: a
+             comprehensive data set for network intrusion detection systems. MilCIS, IEEE.
+             https://research.unsw.edu.au/projects/unsw-nb15-dataset
+
+
+NF-CSE-CIC-IDS2018-v3  (versione NetFlow di CSE-CIC-IDS2018; sorgente dei set CSE di questa
+                        cartella, rigenerabili e non distribuiti)
+
+  fonte    : The University of Queensland — doi: 10.48610/ece9b83
+
+  citare   : Luay, Majed, Layeghy, Siamak, Mohanad, Sarhan, Sayedehfaezeh, Hoseininoorbin,
+             Moustafa, Nour and Portmann, Marius (2025). NF-CSE-CIC-IDS2018-v3. The
+             University of Queensland. (Dataset) doi: 10.48610/ece9b83
+
+  a monte  : CSE-CIC-IDS2018, Communications Security Establishment e Canadian Institute
+             for Cybersecurity. Termini, verbatim:
+               "You may redistribute, republish, and mirror the CSE-CIC-IDS2018 dataset in
+                any form. [...] any use or redistribution of the data must include a
+                citation to the CSE-CIC-IDS2018 dataset and a link to this page in AWS"
+
+  pagina : https://www.unb.ca/cic/datasets/ids-2018.html
+  AWS    : https://registry.opendata.aws/cse-cic-ids2018/
+                      (arn:aws:s3:::cse-cic-ids2018, regione ca-central-1)
+  citare : Iman Sharafaldin, Arash Habibi Lashkari e Ali A. Ghorbani, "Toward
+           Generating a New Intrusion Detection Dataset and Intrusion Traffic
+           Characterization", 4th International Conference on Information
+           Systems Security and Privacy (ICISSP), Portogallo, gennaio 2018.
+
+
+Lavori di riferimento del formato NetFlow usato da entrambi:
+
+  Luay, M., Layeghy, S., Hosseininoorbin, S., Sarhan, M., Moustafa, N. e Portmann, M.
+    (2025). Temporal Analysis of NetFlow Datasets for Network Intrusion Detection Systems.
+    arXiv:2503.04404
+
+  Sarhan, M., Layeghy, S., Moustafa, N. e Portmann, M. (2021). NetFlow Datasets for
+    Machine Learning-Based Network Intrusion Detection Systems. BDTA 2020 / WiCON 2020,
+    Springer. doi: 10.1007/978-3-030-72802-1_9
+
+  Sarhan, M., Layeghy, S. e Portmann, M. (2022). Towards a Standard Feature Set for
+    Network Intrusion Detection System Datasets. Mobile Networks and Applications.
+    doi: 10.1007/s11036-021-01843-0
+
+
+
+AMBITO DELLA LICENZA MIT DEL REPOSITORY
+  Il file LICENSE in radice è una licenza MIT e copre il CODICE di questo repository.
+  NON si applica ai file derivati dai dataset qui sopra, che restano soggetti ai termini
+  dei rispettivi titolari: inferenza/unsw_test_raw.csv, inferenza/unsw_benigni.csv e
+  benchmark/unsw_bench_50k.csv.
+
+== inferenza/ (ex test/) ==
+
+cse_benigni.csv / unsw_benigni.csv
+  origine : estratti dai rispettivi test set canonici filtrando Label=0
+  sha256  : dc42312cbd8b7ce4114616b76611839243da1c91a61d666769b46bb08ab18787  (cse)
+            49771132c3cf57ea076f1645b07be087c5abb3a9d14343ea4d0cd819e2b3a7cf  (unsw)
+  nota    : 1.771.741 e 222.290 flussi + intestazione, 55 colonne entrambi.
+  uso     : calibrazione delle soglie e misure di FPR sui soli benigni.
+
+unsw_test_raw.csv
+  origine : tools/make_unsw_test_raw.py (seed 42; test split lib/preprocessing)
+  sha256  : 16ce7c2d4a795b3e037666bcb3c2d18a49412b229deb530b5238b773e4a08ba0
+  uso     : infer.py --test per unsw e unsw_seed42..49; tabelle E2E cap4
+  nota    : la copia in repo_v4 NON e' questo file: split affine ma diverso
+            (279.877/285.366 righe comuni, 5.488 flussi solo-v4 assenti anche per
+            chiave, ordine diverso, 1 riga in meno). Gate a, f0_gate_residui.log.
+
+cse_test_raw.csv
+  origine : tools/make_cse_test_raw.py (seed 42; test split CSE pieno)
+  sha256  : 7ab7a0430894b9466efa2ac4d84cb7cb31954d2a8f1ed6f3877ccb041047d68a
+  uso     : --test con il modello cse; throughput cap4
+  nota    : la copia in repo_v4 (284.998 righe) e' uno split DIVERSO (0/2000 del
+            campione non-trovato ritrovate anche per chiave numerica): non importata.
+
+lan_test_raw.csv  [NON DISTRIBUITO]
+  origine : repo_v4/inference/data/test/ (archivio locale, copia reale)
+  sha256  : 139b088ae76c7c29dd780ec251b96d0de90040e103471b118fa4ed4f1f2f7cb1
+  uso     : dominio LAN del differential lib<->infer (Fase 2);
+  nota    : 313.115 righe, intestazione a 53 colonne, senza Label. 58 righe hanno
+            un gemello testuale in lan_train: sono flussi DUPLICATI nella cattura
+            originale (701 righe in gruppi duplicati nel sorgente, max 3 copie)
+            spartiti dallo split — indistinguibili per costruzione, non un leak
+            dello split.
+
+
+<modello>_test_raw.csv
+  nota    : infer.py --test cerca dati/inferenza/<model>_test_raw.csv e funziona per i
+            modelli cse e unsw, i cui file sono presenti; per gli altri modelli si usa
+            --batch <csv> esplicito.
+
+== addestramento/ (ex train/) ==  (importati da repo_v4)
+
+unsw_train_raw.csv
+  origine : repo_v4/inference/data/train/ (copia reale da archivio)
+  sha256  : fbf16e272046f7c2b0fee753d66e5c9b34dd345f5ca5a888f3e5d76c04a6308f
+  uso     : ha addestrato (via train_X.npy) weights/unsw e unsw_seed42..49
+
+lan_train_raw.csv    [NON DISTRIBUITO]
+  origine : repo_v4/inference/data/train/ (copia reale da archivio)
+  sha256  : a45a4f3800802c7cfca4516fb13aca76b11e6be37945ef556c5f3c459fabbc30
+  uso     : benigni LAN per il futuro retrain WP-9; dominio LAN del differential
+  nota    : 2.812.222 righe (90,0% di file_benigni.csv); split non sequenziale.
+            Stessa malformazione delle serie per-secondo descritta per
+            lan_test_raw.csv: intestazione a 53 colonne, arita' variabile.
+
+lan_contaminato.csv   [NON DISTRIBUITO]
+  origine : derivato in loco dalla cattura LAN dell'autore ,
+            NON importato da repo_v4. Dati personali, non distribuiti.
+  sha256  : 08bc355f105d266dcfad7f19acc89bdc549c9e9479783257ca21edfab605d612
+  nota    : 2.966.479 flussi + intestazione, 53 colonne, 639.474.540 byte.
+            Contaminazione NATURALE: nessuna pre-segmentazione degli indirizzi
+            sospetti.
+  uso     : HA ADDESTRATO modelli/produzione/lan_contaminato, il modello del caso di
+            studio su rete reale (cap4, tab:deploy_lan). Il modello e' stato
+            RI-ADDESTRATO il 2026-07-22 sulla cattura ri-preprocessata col parser
+            corretto; il precedente e' in ~/backup_refactoring/lan_pre_redo_20260722_1650/.
+
+unsw_train_contam1_raw.csv
+  origine : repo_v4/inference/data/train/ (copia reale da archivio, importato 2026-07-18)
+  sha256  : debe648f35c824aaad8d9fb7c1eb613c0ce7d24d84124905fee016ccfa86c15f
+  nota    : 1.796.297 flussi + intestazione, 55 colonne. Variante contaminata di
+            unsw_train_raw per il retrain label-free su UNSW (contaminazione 1%).
+  uso     : retrain label-free UNSW (unsw_seed42..49).
+            ATTENZIONE: 3,27% delle righe del dominio LAN ha L7_PROTO frazionario
+            (skew L7 piu' marcato dei domini accademici).
+
+== benchmark/ ==  (riscritta 2/7 sullo stato reale del disco)
+
+
+unsw_bench_50k.csv
+  origine : repo_v4/inference/data/bench/ (copia reale da archivio, importato 2026-07-18)
+  sha256  : 3324c00f902801ea2acbec70cbb5016ac635c6ab5a5f697192609ad1dab3f396
+  nota    : 50.000 flussi + intestazione, 55 colonne. 12.164.949 byte.
+  uso     : UNICO CSV base del benchmark di throughput. bench_run.sh:32 lo seleziona
+            per taglia (`ls -S ... | head -1`), quindi qualunque CSV piu' grande messo
+            in questa directory lo sostituirebbe in silenzio: e' l'unico file di
+            benchmark presente ed e' bene che resti tale.
+
+NOTA DI CONSEGNA (2026-07-23): le voci marcate [NON DISTRIBUITO] sono censite qui per
+provenienza ma NON fanno parte del bundle consegnato (cattura privata dell'autore).
+
+
+
+
+== Rigenerazione dei file non distribuiti nel repository (2026-09-08) ==
+
+I quattro dataset CSE/UNSW sopra i 100 MB non sono nel repository pubblico. Si rigenerano con
+
+  bash inference/dati/rigenera_dataset_grandi.sh [cse_test|cse_benigni|unsw_train|unsw_contam|tutto]
+
+che verifica ogni file contro gli sha256 di questo documento (fallimento bloccante):
+  inference/cse_test_raw.csv            tools/make_cse_test_raw.py sugli artefatti del preprocessing CSE
+                                        sha256 7ab7a0430894b9466efa2ac4d84cb7cb31954d2a8f1ed6f3877ccb041047d68a
+  inference/cse_benigni.csv             righe Label=0 di cse_test_raw.csv (colonna 54), intestazione conservata
+                                        sha256 dc42312cbd8b7ce4114616b76611839243da1c91a61d666769b46bb08ab18787
+  data/raw/unsw_train_raw.csv      NESSUN generatore fra i tool: archivio, porzione di addestramento
+                                        (Label=0, 1.778.334 righe) del CSV grezzo NF-UNSW-NB15-v3 nel formato
+                                        nProbe a 55 colonne, secondo lo split della pipeline di preprocessing
+                                        sha256 fbf16e272046f7c2b0fee753d66e5c9b34dd345f5ca5a888f3e5d76c04a6308f
+  data/raw/unsw_train_contam1_raw.csv  tools/make_unsw_contaminated.py (rng(0)) da unsw_train_raw.csv,
+                                        data/raw/NF-UNSW-NB15-v3.csv e inferenza/unsw_test_raw.csv
+                                        sha256 debe648f35c824aaad8d9fb7c1eb613c0ce7d24d84124905fee016ccfa86c15f
+I tre file della cattura LAN privata (addestramento/lan_train_raw.csv, addestramento/lan_contaminato.csv,
+inferenza/lan_test_raw.csv) restano [NON DISTRIBUITO] e non si rigenerano.

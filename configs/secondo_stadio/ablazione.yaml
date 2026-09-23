@@ -1,0 +1,22 @@
+# configs/secondo_stadio/ablazione.yaml — ablazione delle regole di fusione (P7, cap3).
+#
+# STATUS ILLUSTRATIVE: richiede lo stage `fusione` gia' eseguito (scores.npz +
+# results.json canonico). Knob scientifici OBBLIGATORI (nessun default silenzioso): la run
+# pre-registrata e' legata univocamente a questo YAML. Lo sweep su test e' RENDICONTAZIONE
+# (conferma descrittiva): la SCELTA dei punti operativi avviene su val (GATE E).
+status: illustrative
+
+stage: ablazione
+out_dir: runs/secondo_stadio/ablazione
+
+scores_npz: runs/secondo_stadio/fusione/scores.npz
+canonico: runs/secondo_stadio/fusione/results.json
+
+# ---- Knob scientifici (OBBLIGATORI) ----
+grid_val_fpr: [0.001, 0.002, 0.003, 0.005, 0.0075, 0.01, 0.0125, 0.015, 0.02, 0.03, 0.05]
+ancore_fpr_test_basse: [0.005, 0.01]
+ancore_preset_canonici: [rec, high]
+delta_operativa: 0.005          # |Delta recall| < 0.5 pp = operativamente equivalenti
+criteri:
+  A: "logit-solo raggiunge tutte le ancore e eguaglia la fusione entro delta_operativa"
+  B: "la fusione domina la recall a FPR appaiato (Delta >= delta_operativa in >=1 ancora)"

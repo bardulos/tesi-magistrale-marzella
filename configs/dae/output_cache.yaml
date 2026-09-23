@@ -1,0 +1,10 @@
+# Chiusura cap2 — caratterizzazione dell'uscita del DAE #569 (seme 2034). NON è il secondo stadio.
+# Forward val+test → latente z(16) standardizzato + residui r(91) sbiancati (Ledoit-Wolf sui benigni val);
+# salva la cache + tabella L1/L2/score-DAE su test (MCC/precision/recall/F1/FPR realizzato) + figure.
+# Eseguito da tools/dae_output_cache.py (tool standalone, non dal dispatcher dae.py).
+weights: runs/dae/loao_fase3/weights/569/seed_2034.weights.h5
+val_dir: <HOME>/dae_data_91                              # val_X.npy, val_y.npy
+val_attack: runs/preprocessing/val_attack_npy/val_Attack.npy
+test_dir: runs/preprocessing/test_npy                      # test_X.npy, test_y.npy, test_Attack.npy
+out_dir: runs/dae/output_569
+threads: 8

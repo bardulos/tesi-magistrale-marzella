@@ -1,0 +1,16 @@
+# Transform: post_audit.parquet → train/val/test .npz + transform_meta + scaler.
+# CSE: fit dello scaler (scrive scaler_params/feature_order/transform_meta).
+# Per UNSW: --override apply_from=runs/preprocessing/transform_cse → applica lo scaler di CSE (no fit).
+# In modalità apply lo split e i 3 .npz (train/val/test) si producono COMUNQUE; si saltano SOLO i
+# metadata (scaler_params/feature_order/transform_meta), ripresi da apply_from. (CSE è il dominio:
+# per UNSW a valle si usano val/test, ma train.npz viene comunque scritto.)
+stage: transform
+
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+out_dir: runs/preprocessing/transform_cse
+seed: 42
+# apply_from: omesso → modalità fit (CSE). Per UNSW:
+#   --override primary=runs/preprocessing/reduce_unsw/unsw_post_audit.parquet
+#   --override out_dir=runs/preprocessing/transform_unsw
+#   --override apply_from=runs/preprocessing/transform_cse

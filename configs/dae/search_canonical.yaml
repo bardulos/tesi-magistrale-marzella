@@ -1,0 +1,45 @@
+# =====================================================================================
+# CONFIG CANONICA (DIDATTICA) — search DAE unica a 600 trial, metodologia idealizzata.
+#
+# ⚠ NON è il config con cui è stato prodotto il vincitore #569. Il percorso reale fu una
+#   doppia search 400→600 con warm-start, patience 50→18, resume=none. Questa versione
+#   espone la metodologia "come se fosse filata liscia": una search unica, range finali
+#   dall'inizio, nessuna correzione in corsa. Il vincitore NON è riproducibile da alcuna
+#   search (stocastica per natura) — solo dal modello congelato.
+#
+# I file REALI usati (configs/dae/search.yaml, search_extended.yaml) NON vanno rimossi:
+# questo li AFFIANCA come documentazione metodologica.
+# =====================================================================================
+stage: search
+study_name: dae_search
+out_dir: runs/dae/search
+
+# Dati (assoluti, presenti sui worker)
+shard_dir: <HOME>/dae_data_91
+val_X: <HOME>/dae_data_91/val_X.npy
+val_y: <HOME>/dae_data_91/val_y.npy
+
+# Optuna / ASHA — search unica a 600 trial, TPE puro (nessun warm-start: non c'è un 400 pregresso)
+n_trials: 600
+n_startup_trials: 150           # copertura random iniziale della regione (btl[6,16]/exp[40,256])
+max_concurrent_trials: 80       # = 5 VPS × 16 core (cpu_per_trial=1)
+cpu_per_trial: 1
+grace_period: 4                 # rung unico al 4° seme
+reduction_factor: 2
+seed: 42
+ray_address: auto
+resume: none                    # studio nuovo pulito (no gotcha resume=auto)
+verbose: 1
+
+# Range iperparametri: i valori FINALI sono già in lib/dae/constants.py
+#   btl[6,16] · exp[40,256] · mid[20,80] · sigma[0.01,0.20] · lr[1e-4,1e-2]log
+
+# Salvataggio pesi per-seme (best-epoch dei COMPLETE) nella HOME durevole (mai /tmp)
+save_weights: true
+weights_home: <HOME>/repov6_weights
+
+# Training
+max_epochs: 100
+patience: 18
+non_learning_margin: 0.05
+batch: 512

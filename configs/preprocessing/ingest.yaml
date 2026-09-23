@@ -1,0 +1,7 @@
+# Ingest: CSV grezzo -> Parquet snappy, tipi 1:1 da pd.read_csv (nessun cast), cosi' il
+# dataframe e' identico a load_dataset(handle) e l'encode a valle resta md5-equivalente.
+# Default CSE; per UNSW: --override dataset=unsw. Accetta anche una lista: dataset: [cse, unsw].
+stage: ingest
+
+dataset: cse
+out_dir: data/parquet

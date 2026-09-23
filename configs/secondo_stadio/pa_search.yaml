@@ -1,0 +1,49 @@
+# configs/secondo_stadio/pa_search.yaml — ricerca del classificatore di pseudo-anomalie (P3, cap3).
+#
+# REDESIGN 2026-07-03 (direttiva maintainer): la PA CERCA l'architettura (exp/n_layers/ratio/dropout,
+# intervalli di P1 INTATTI) + lr RISTRETTO [1e-4,1e-3] + generazione (delta/alpha). NIENTE mlp_fixed
+# (il config del trial porta ratio/lr/dropout; l2=L2_FIXED_S2). WARM-START dalle 10 architetture piu'
+# diverse fra le rosse del ceiling P1 (config PARZIALI: delta/alpha campionati dal TPE). RUNNABLE.
+#
+# Note vincolanti (GATE A): objective = mean(MCC_bal) − std con soglia standalone; MCC_bal alla
+# prevalenza di RIFERIMENTO (pi~0,3709, MAI "di deployment", D5); AUC-ROC e MCC@FPR1% colonne
+# INFORMATIVE; ES per-epoca su AUC-PR (mai MCC); PRUNED nel DB inclusi nel fit TPE (dichiarato);
+# rung ASHA a 4 e 6 semi su 8 (rf=1.5 float). Lancio GATED (sync gate + smoke prima del cluster).
+
+stage: pa_search
+study_name: pa_search
+out_dir: runs/secondo_stadio/pa_search
+
+# ---- Dati (cache del primo stadio congelato #569/2034 + etichette per-classe) ----
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+
+# ---- Warm-start: 10 architetture piu' diverse fra le rosse del ceiling P1 ----
+# Config PARZIALI (exp/n_layers/ratio/dropout/lr): Optuna FISSA l'architettura e CAMPIONA delta/alpha.
+# Se buone reggono e accelerano; se no il TPE le scarta. (Niente mlp_fixed: la PA cerca ratio/lr/dropout.)
+warmstart:
+  enqueue_configs: <HOME>/repov6_ops/pa_warmstart_diverse10.json
+
+# ---- Motore (chiavi generiche lib/search/engine.py) ----
+n_trials: 600
+n_startup_trials: 48
+max_concurrent_trials: 80
+cpu_per_trial: 1
+grace_period: 4               # rung a 4 e 6 semi (PA: grace=4, rf=1.5, max_t=8)
+reduction_factor: 1.5
+seed: 42
+ray_address: auto
+resume: none
+verbose: 1
+
+# ---- Pesi per (trial, seme): HOME durevole del worker, MAI /tmp ----
+save_weights: true
+weights_home: <HOME>/repov6_weights_s2
+
+# ---- Componente ----
+max_epochs: 100               # D10
+patience: 15                  # D1
+batch: 512                    # D3 (batch di benigni; il batch effettivo e' 2x con le pseudo 1:1)
+es_n_attacks: 50000           # D7
+split_seed: 0                 # D2
+val_frac: 0.2

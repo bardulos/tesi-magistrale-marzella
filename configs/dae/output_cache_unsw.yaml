@@ -1,0 +1,13 @@
+# Cache DAE su UNSW in regime DEPLOY leak-free — NON è il secondo stadio.
+# Forward del DAE #569 (seme 2034) su val+test UNSW, poi APPLICA i parametri di whitening (Ledoit-Wolf)
+# + z-scaler CONGELATI di CSE (apply_from: runs/dae/output_569), SENZA rifittarli su UNSW. Così
+# phi_unsw=[z_s, r_w] cade nello STESSO spazio atteso dal 2° stadio addestrato su CSE (nessun leakage:
+# i parametri vengono da CSE, non stimati sui dati UNSW). Niente val_attack: UNSW ha solo la label binaria.
+# Eseguito da tools/dae_output_cache.py (branch apply_from). Le figure di chiusura cap2 sono saltate
+# (CSE-specifiche). whitening_params.npz + z_scaler.npz salvati nella dir UNSW sono IDENTICI a quelli CSE.
+weights: runs/dae/loao_fase3/weights/569/seed_2034.weights.h5
+val_dir: runs/unsw_local/data                              # val_X.npy, val_y.npy (no val_Attack)
+test_dir: runs/unsw_local/data                             # test_X.npy, test_y.npy (no test_Attack)
+out_dir: runs/dae/output_569_unsw
+apply_from: runs/dae/output_569                            # whitening + z-scaler congelati di CSE
+threads: 8

@@ -1,0 +1,40 @@
+# configs/secondo_stadio/fusione_canonica_unsw.yaml — regola canonica su UNSW-NB15
+# (trasferimento di dominio, rettificato il 2026-07-06: DAE #569 ri-addestrato su
+# benigni UNSW seme 2024, PA #589 ri-addestrato seme 1337 — NON il DAE CSE congelato via
+# apply_from, che collassa fuori-dominio). Stessa RICETTA di CSE (F.FUSION_MODES: percentili
+# p97/p99/p99.8 dei benigni-select, budget FPR) applicata agli score UNSW: le soglie numeriche
+# escono diverse da CSE, la ricetta e' l'invariante — e' il claim di trasferibilita' della tesi
+# reso verificabile (Parte B del mandato fusione, GATE 1 approvato 2026-07-11).
+#
+# Gli score di questo dominio sono GIA' dumpati (scores_npz sotto: unico oracolo UNSW,
+# prodotto dalla prima esecuzione): lo stage li riusa senza forward aggiuntivo. Senza la
+# chiave `scores_npz` (quella che lo stage legge) ricalcolerebbe fresh e il dump
+# riscriverebbe in place l'artefatto congelato.
+#
+# Gate di riproduzione (2026-07-11): bit-exact su fpr_test/recall_test/mcc_bal_test per
+# entrambe le modalita' contro runs/secondo_stadio/fusione_unsw_retrain/results.json
+# (artefatto congelato, MAI sovrascritto: questo stage scrive results_canonico.json).
+status: active
+
+stage: fusione_canonica
+out_dir: runs/secondo_stadio/fusione_unsw_retrain
+
+cache_dir: runs/dae/output_569_unsw_retrain
+labels_val: runs/dae/output_569_unsw_retrain/val_attack.npy
+labels_test: runs/dae/output_569_unsw_retrain/test_attack.npy
+l1l2_csv: runs/dae/output_569_unsw_retrain/l1l2_table.csv   # inerte per fusione_canonica (usa percentili live), tenuto per compute_scores
+
+# ---- PA #589 su UNSW retrain, seme di produzione 1337 (rettifica del 2026-07-06) ----
+pa_weights: runs/secondo_stadio/pa_transfer_unsw/589_retrain/cfg589_seed1337/best.weights.h5
+model_config:
+  exp: 3.928824460722608
+  n_layers: 2
+  ratio: 0.6159888054811458
+  dropout: 0.27477804731454736
+  lr: 0.0008975201332140938
+  delta: 0.09261080547245101
+  alpha_lo: 1.9481223527402847
+  alpha_hi: 3.079948793054766
+mlp_fixed: {}   # inerte (KEEP-and-flag, v. fp_mining._load_model)
+
+scores_npz: runs/secondo_stadio/fusione_unsw_retrain/scores.npz   # riuso dell'oracolo congelato (nessun ricalcolo, nessuna riscrittura)

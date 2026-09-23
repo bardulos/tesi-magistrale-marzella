@@ -1,0 +1,37 @@
+# configs/secondo_stadio/fusione_unsw.yaml — fusione AND∪logit su UNSW (§8-bis, trasferibilità dominio).
+#
+# Stessa RICETTA di calibrazione di CSE (percentili benigni-select, stessi budget p97/α=0,003/p99,8
+# e union@1%), applicata ai dati UNSW. STATUS GATED: richiede i pesi PA #589 su UNSW e la
+# via libera del maintainer.
+# I pesi PA vanno compilati dopo il training: COMPILARE pa_weights col seme di produzione UNSW.
+status: gated
+
+stage: fusione
+out_dir: runs/secondo_stadio/fusione_unsw
+
+cache_dir: runs/dae/output_569_unsw
+labels_val: runs/dae/output_569_unsw/val_attack.npy
+labels_test: runs/dae/output_569_unsw/test_attack.npy
+l1l2_csv: runs/dae/output_569_unsw/l1l2_table.csv
+
+# ---- Finalista #589, seme UNSW da compilare (GATE) ----
+# pa_weights: runs/secondo_stadio/pa_transfer_unsw/589/seed_<SEME>/best.weights.h5
+#   ^^^ NOTA: il pre-test NON salva i pesi (save_weights=False). Serve un training dedicato
+#   con save_weights=True, oppure modificare l'orchestratore. Il seme di produzione UNSW va
+#   scelto dopo il training.
+model_config:
+  exp: 3.928824460722608
+  n_layers: 2
+  ratio: 0.6159888054811458
+  dropout: 0.27477804731454736
+  delta: 0.09261080547245101
+  alpha_lo: 1.9481223527402847
+  alpha_hi: 3.079948793054766
+mlp_fixed:
+  ratio: 0.6
+  lr: 0.0005
+  dropout: 0.1
+  l2_reg: 1.0819231482664046e-06
+
+alpha_and: 0.005
+dump_scores_npz: runs/secondo_stadio/fusione_unsw/scores.npz

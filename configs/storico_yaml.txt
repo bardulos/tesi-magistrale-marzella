@@ -1,0 +1,237 @@
+# configs/storico_yaml.txt — storico delle configurazioni di repov6
+# Task A1 del refactoring strutturale (2026-07-13).
+#
+# Regole di lettura:
+# - Lo stato ATTUALE e' l'ultima voce in ordine cronologico (stratigrafia), le precedenti
+#   sono storia.
+# - Gli snapshot runs/<run>/config.yaml sono copie PRE-merge: NON contengono gli --override.
+#   Verificato: runs/dae/search/config.yaml identico a configs/dae/search.yaml (patience: 17)
+#   mentre il lancio uso' --override patience=50. Gli override vivono solo nel comando di
+#   lancio (head dei driver.log).
+# - Lo snapshot registra solo l'ULTIMO stage eseguito con quell'out_dir: es. runs/secondo_stadio/
+#   fusione/config.yaml oggi ha stage: fusione_canonica (gate 2026-07-11), non la fusione P7.
+# - Stati: ATTIVO (consumato/rieseguibile oggi) | SOLO-STORICO (fase conclusa, config = storia) |
+#   SUPERATO(da: X) | DOCUMENTALE (mai eseguito, consolidamento) | MAI-ATTIVATO.
+
+======================================================================
+1. YAML in configs/ — ordine cronologico di primo uso
+======================================================================
+
+2026-06-26 | configs/preprocessing/*.yaml (10 file: _template, ingest, inspect, stats, encode,
+            reduce, audit, audit_encoded, transform, verify) | pilastro preprocessing
+  stato:    SOLO-STORICO (EREDITATI VERBATIM da repo_v5 al bootstrap: "Eredita verbatim
+            il solo pilastro preprocessing (91 feature)").
+  run:      NESSUNA in repov6 (runs/preprocessing/ contiene solo test_npy/ e val_attack_npy/,
+            prodotte da tool). Le run storiche vivono in repo_v5/runs/preprocessing/.
+  evidenze: byte-identici ai gemelli repo_v5 (diff 2026-07-13: 10/10 IDENTICO).
+  note:     _template.yaml ha 9 blocchi `stage:` di cui l'ultimo `stage: plots` SENZA stage nel
+            registry di preprocessing.py (anomalia, v. par. A6); ingest.yaml scrive out_dir
+            data/parquet (fuori da runs/).
+  override: n/a (mai lanciati in repov6).
+
+2026-06-26 | configs/dae/search.yaml | stage: search (dae.py)
+  stato:    SOLO-STORICO (search 400 chiusa il 2026-06-28).
+  run:      runs/dae/search (driver.log + snapshot; LANCIO 2026-06-27 04:09),
+            poi consolidata/backup in runs/dae/search_400 (snapshot search_400/config.yaml
+            byte-identico a search.yaml, diff 2026-07-13).
+  override: --override patience=50 --override non_learning_margin=0.05 (patience inerte per
+            restore_best_weights).
+
+2026-06-28 | configs/dae/search_extended.yaml | stage: search (dae.py)
+  stato:    SOLO-STORICO — ma e' il config piu' RIUSATO del cap2: config-base anche di
+            compressione, base-retrain e LOAO (via flag --config dei tool, non dal dispatcher).
+  run:      runs/dae/search_600 (PID 1465921);
+            riuso: runs/dae/compress_fase2 e compress_fase2_s2035 e compress_base
+            (tools/refit_compress.py --config ...);
+            runs/dae/loao_fase3 (tools/loao_ray.py --config ...).
+  override: primo lancio con --override resume=none (gotcha Ray Tune su esperimento nuovo,
+            2026-06-29). Nei riusi: parametri extra via CLI del tool
+            (--extra-seeds, --out-dir, --finalists...).
+
+2026-07-01 | configs/dae/search_canonical.yaml | stage: search (dae.py)
+  stato:    DOCUMENTALE (mai eseguito). Creato nel consolidamento cap2 come "config canonica"
+            AFFIANCATA ai config reali, senza sovrascriverli: search unica 600, range finali,
+            patience=18, save_weights, weights_home, NO warmstart; exp/mid corretti a 112/80.
+            Nessuno snapshot run corrispondente. Nome congelato: NON si rinomina.
+  override: n/a.
+
+2026-07-01 | configs/dae/output_cache.yaml | SENZA campo stage: letto da tools/dae_output_cache.py
+  stato:    ATTIVO (config del driver UNICO di chiusura cap2; produce la cache phi CSE canonica).
+  run:      runs/dae/output_569 (build_info.json presente). Nome congelato.
+  override: parametri via CLI del driver; nessun --override dispatcher (non passa dal dispatcher).
+
+2026-07-02 | configs/secondo_stadio/sup_search.yaml | stage: sup_search
+  stato:    SOLO-STORICO (P1 ceiling conclusa).
+  run:      runs/secondo_stadio/sup_search (snapshot presente).
+  storia:   editing in-place n_trials 200->400 su direttiva. Driver log FUORI repo:
+            ~/repov6_ops/sup_search.log.
+  override: nessuno documentato (modifiche fatte editando lo yaml).
+
+2026-07-02 | configs/secondo_stadio/pa_search.yaml | stage: pa_search
+  stato:    SOLO-STORICO (P3 conclusa).
+  run:      runs/secondo_stadio/pa_search (snapshot presente).
+  storia:   nasce `status: illustrative` con rigetto verificato dal dispatcher; ridisegnata e
+            LANCIATA il 2026-07-03 (driver nohup, 600 trial, max_concurrent 80) — il campo status
+            oggi NON esiste piu' nello yaml (attivazione per rimozione del campo). Warm-start da
+            file FUORI repo: ~/repov6_ops/pa_warmstart_diverse10.json (10/10 in coda).
+  override: nessuno documentato.
+
+2026-07-02 | configs/secondo_stadio/fp_mining.yaml | stage: fp_mining
+  stato:    MAI-ATTIVATO: `status: illustrative` dalla nascita ("finche' GATE B/D
+            non...") ad OGGI (campo ancora presente, verifica 2026-07-13); out_dir dichiarato
+            runs/secondo_stadio/fp_mining INESISTENTE. L'hardening reale (P6) giro' su Ray,
+            via tools/pa_harden_run.py (fan-out Ray), in runs/secondo_stadio/harden*.
+            => lo stage fp_mining del dispatcher non e' mai stato esercitato end-to-end
+            (anomalia di copertura, v. par. A6).
+  override: n/a.
+
+2026-07-02 | configs/secondo_stadio/fusione.yaml | stage: fusione | status: active
+  stato:    SOLO-STORICO (P7 conclusa; l'artefatto congelato runs/secondo_stadio/fusione/
+            results_v2.json e' il riferimento bit-exact del gate).
+  run:      runs/secondo_stadio/fusione (results_v2.json + scores.npz). ATTENZIONE snapshot:
+            config.yaml nella dir e' oggi quello del gate fusione_canonica (2026-07-11,
+            ultimo scrittore), non quello della fusione P7.
+  storia:   nascita: dump_scores_npz, GATE E dichiarato; fase P7 e aggiudicazione VAL 2026-07-06.
+  override: nessuno documentato.
+
+2026-07-02 | configs/secondo_stadio/pseudo_placement.yaml | stage: pseudo_placement | status: active
+  stato:    SOLO-STORICO (P7 conclusa).
+  run:      runs/secondo_stadio/pseudo_placement (snapshot presente).
+  override: nessuno documentato.
+
+2026-07-02 | configs/secondo_stadio/ablazione.yaml | stage: ablazione | status: active
+  stato:    SOLO-STORICO (P7 conclusa).
+  run:      runs/secondo_stadio/ablazione (snapshot presente). Nascita: griglia 11 punti,
+            ancore basse+preset.
+  override: nessuno documentato.
+
+  override: n/a (parametri via CLI del tool).
+
+2026-07-03 | configs/dae/output_cache_unsw.yaml | SENZA stage: letto da tools/dae_output_cache.py
+  stato:    SUPERATO(da: output_cache_unsw_retrain.yaml, 2026-07-06) — cache phi UNSW col primo
+            stadio SBAGLIATO (pesi CSE), parte della sezione 8-bis poi INVALIDATA
+            (rettificata in seguito).
+  run:      runs/dae/output_569_unsw (build_info.json presente; artefatto storico, resta).
+  override: parametri via CLI del driver.
+
+2026-07-06 | configs/secondo_stadio/fusione_unsw.yaml | stage: fusione | status: gated
+  stato:    SUPERATO(da: fusione rettificata su cache retrain, 2026-07-06 sera) — config della
+            fusione UNSW della sezione 8-bis INVALIDATA.
+  run:      runs/secondo_stadio/fusione_unsw (solo results.json). NESSUNO snapshot
+            dispatcher nella dir: l'esecuzione 8-bis e' attribuita a un'orchestrazione via tool
+            non inclusi nel repository; il config nacque "gated, pa_weights da compilare" e non
+            risulta mai passato dal dispatcher.
+  override: n/a.
+
+2026-07-06 | configs/dae/output_cache_unsw_retrain.yaml | SENZA stage: letto da
+            tools/dae_output_cache.py
+  stato:    ATTIVO (cache phi UNSW CORRETTA: DAE #569 ri-addestrato su UNSW, whitening/z-scaler
+            fittati sui benigni UNSW). E' la cache consumata dalla fusione
+            rettificata e dal gate canonico UNSW.
+  run:      runs/dae/output_569_unsw_retrain (build_info.json presente).
+  override: parametri via CLI del driver.
+
+2026-07-11 | configs/secondo_stadio/wp4v2_es_search.yaml | stage: wp4v2_es_search
+  stato:    SOLO-STORICO (WP-4_v2 chiuso; vincitore trial 274 congelato nel protocollo deploy).
+  run:      runs/secondo_stadio/wp4v2_search/ray (snapshot presente in ray/config.yaml).
+  storia:   nascita: rung ASHA 7/14 su 19, grace=7 rf=2; lancio
+            `nohup python secondo_stadio.py configs/secondo_stadio/wp4v2_es_search.yaml`.
+  override: nessuno documentato.
+
+2026-07-11 | configs/secondo_stadio/fusione_canonica.yaml | stage: fusione_canonica | status: active
+2026-07-11 | configs/secondo_stadio/fusione_canonica_unsw.yaml | stage: fusione_canonica | status: active
+  stato:    ATTIVI (gate di riproduzione bit-exact della fusione, CSE e UNSW).
+            Scrivono results_canonico.json SENZA mai toccare gli artefatti congelati
+            (results_v2.json CSE / results.json UNSW-retrain). La riproduzione bit-exact
+            rispetto agli artefatti congelati e' verificata.
+  run:      out_dir = runs/secondo_stadio/fusione e .../fusione_unsw_retrain (i loro snapshot
+            config.yaml sono quelli oggi presenti nelle due dir: ultimo scrittore).
+  override: nessuno documentato.
+
+======================================================================
+2. Fasi guidate da tools SENZA yaml del dispatcher (il comando CLI e' il config)
+======================================================================
+Il comando CLI e' il config; il criterio di inclusione dei tool e' in tools/README.txt.
+
+runs/preprocessing/test_npy           | tools/materialize_test_npy.py | 2026-06-29
+runs/preprocessing/val_attack_npy     | materializzazione val_Attack.npy per P1 | 2026-07-02 (input del motore P1)
+runs/dae/search_400                   | consolidamento/backup della run search | 2026-06-28
+runs/dae/compress_fase2{,_s2035}      | tools/refit_compress.py --config search_extended.yaml --extra-seeds ... | 2026-06-30
+runs/dae/compress_base                | tools/refit_compress.py (6 semi base, 426 job) | —
+runs/dae/loao_fase3                   | tools/loao_ray.py --config search_extended.yaml (pesi dei finalisti) poi tools/loao_run.py (calcolo LOAO forward-only) | —
+runs/dae/latent_history               | tools/dae_latent_history.py (17 semi, lanci in parallelo) | 2026-07-07
+runs/dae/entropy_contam{,_smoke_v2}   | tools/dae_entropy_contam.py (train su workstation e su cluster, 16 job per nodo; analyze offline) | pilota 2026-07-08; FASE B 2026-07-09
+runs/unsw_local/*                     | tools/deploy_unsw_train.py (ex unsw_*, rename WP-2) | 2026-06-30; rename 2026-07-07
+runs/secondo_stadio/pa_compress       | tools/pa_compress.py (Ray+VPS) | 2026-07-04
+runs/secondo_stadio/harden_base,harden,harden_extra | tools/pa_harden_run.py (fan-out Ray) | lancio 2026-07-05; riprogettazione pAUC_MCC
+runs/secondo_stadio/loao_pa           | tools/pa_loao_{smoke,fanout,worker,aggregate}.py (+ pa_loao_run.py P5) | TEMPO 1 e 2, figure (2026-07-05)
+runs/secondo_stadio/wp4v2_repass      | tools/pa_wp4v2_repass.py | 2026-07-10
+runs/secondo_stadio/wp4v2_search      | tools/pa_wp4v2_search.py (fasi 0-3) + stage wp4v2_es_search (fase Ray) | —
+runs/wp_e2e                           | tools/wp_e2e_unsw_fanout.sh | 2026-07-12
+models/cse                            | tools/convert_weights_to_npz.py (N7; copia poi in inference/weights/cse) | 2026-07-12
+
+======================================================================
+3. Config e artefatti operativi FUORI dal repo (censiti, non ricostruiti)
+======================================================================
+~/repov6_ops/warmstart_diverse10.json     | warm-start search DAE 600 (esiste su disco, 2026-07-13)
+~/repov6_ops/pa_warmstart_diverse10.json  | warm-start P3 PA, 10 config (esiste)
+~/repov6_ops/cfg489.json                  | config PA #489 per ablazione/pretest (esiste)
+~/repov6_ops/{sup_search,pa_search,dashboard*}.log | driver/dashboard log off-repo di P1/P3
+<HOME>/dae_data_91/                    | dir-dati canonica esterna (val_X/val_y + shard)
+~/repov6_weights, ~/repov6_loao_weights, ~/repov6_existing_weights, ~/repov6_weights_s2
+                                          | weights-home durevoli dei lanci cluster
+PROPOSTA (STOP 1): archiviare i 3 JSON di configurazione di ~/repov6_ops dentro il repo
+(es. configs/ops_archive/) per autocontenimento; i log restano fuori.
+
+======================================================================
+4. Nota trasversale sugli override (emendamento maintainer)
+======================================================================
+Override documentati nell'intera storia repov6 (censimento 2026-07-13):
+  - dae search 400: --override patience=50 --override non_learning_margin=0.05
+  - dae search 600: --override resume=none al primo lancio
+  - tutti gli altri lanci dispatcher documentati: nessun override (config editati in-place, es.
+    sup_search n_trials 200->400).
+GAP STRUTTURALE: lo snapshot pre-merge non cattura gli override; proposta a STOP 1 (task B
+dedicato, rifinitura R4): lib/cli.py salvi anche config_effective.yaml post-merge, verificando
+che il post-merge contenga gli override e il pre-merge resti invariato.
+
+======================================================================
+5. Integrazione 2026-07-21 (ricontrollo di completezza; stratigrafia:
+   questo livello AGGIORNA lo stato delle voci precedenti)
+======================================================================
+
+5.1 — configs/preprocessing/*.yaml: la voce del 2026-06-26 ("run: NESSUNA in
+repov6") è SUPERATA. Il 2026-07-14 l'intera catena è stata eseguita in repov6 via
+dispatcher: inspect/stats (CSE e UNSW), encode, audit_encoded, reduce, transform,
+verify (CSE) → runs/preprocessing/{inspect,stats}_{cse,unsw}, encode_cse,
+audit_encoded_cse, reduce_cse, transform_cse, verify_cse (referti v6: fonte canonica
+dei numeri del cap1 dal mandato fix 2026-07-21). Sanata anche l'anomalia A6: il
+registry di preprocessing.py dispatcha OTTO stage (righe 35-42; resta il TODO sulla
+docstring r.10, ferma a 5). Stati: ATTIVO (tutta la catena rieseguibile).
+
+5.2 — PROPOSTA (STOP 1) del par. 3: ESEGUITA — i 3 JSON di ~/repov6_ops sono
+archiviati in configs/ops_archive/ (con README); i log restano fuori.
+
+5.3 — GAP STRUTTURALE del par. 4: SANATO — lib/cli.py salva config_effective.yaml
+post-merge accanto allo snapshot pre-merge (dal 2026-07-13): verificato che il post-merge
+contiene gli override e il pre-merge resta invariato.
+
+5.4 — Fasi guidate da soli tool, successive al 2026-07-13 (comando CLI come config):
+  2026-07-13/14 | WP-E2E UNSW: inference/train.py per-seme + eval → runs/wp_e2e/
+                | eval_8semi.txt; promozione seed 44 (models/unsw).
+  2026-07-14    | WP-E2E-CSE: make_cse_csv + flotta 8 semi → runs/wp_e2e_cse/
+                | (tabella_per_seme_consolidata.csv, matched_fpr_cse.txt);
+                | promozione seed 46 → models/cse_e2e/ (regola label-free).
+  2026-07-15    | LOAO-Spearman CSE (tool non incluso nel repository) → loao_spearman.csv
+                | + scatter + box (dal 2026-07-21 in runs/wp_e2e_cse/loao_spearman/, ex out/).
+  2026-07-16    | canary 13,8M CSE → runs/wp_e2e_cse/canary13m_dae.log.
+  2026-07-16/17 | WP-10 bench: infer.py --bench strumentato → runs/wp10_bench/
+                | (tabella_breakdown_perstep.csv, bench_json_instrumented/).
+  2026-07-18/19 | Retrain LAN (inference/train.py, tranche lan_*) →
+                | inference/modelli/{produzione/lan_contaminato, sperimentali/
+                | lan_seed4x}; WP-9 flotta LAN (2026-07-19).
+  2026-07-19/20 | Bench multi-architettura (inference/bench_run.sh su RPi/Ryzen/i3)
+                | → inference/benchmarks/*.json (figure §9ter).
+
+Regola invariata: per queste fasi la "config" è il comando di lancio della voce datata
+corrispondente.

@@ -1,0 +1,9 @@
+# Encode UNSW: schema-driven sullo schema di CSE. Con schema_from, encode_l7_proto emette le 15
+# binarie l7_* di CSE invece di ricalcolare il top-15 su UNSW, encode_tcp_flags usa i bit di CSE
+# invece della soglia empirica, e align_to_schema forza l'allineamento finale delle colonne.
+# Gemello di encode.yaml, che resta il default CSE e documenta la stessa cosa via --override.
+stage: encode
+
+primary: data/parquet/unsw_raw.parquet
+out_dir: runs/preprocessing/encode_unsw
+schema_from: runs/preprocessing/encode_cse/feature_types.json

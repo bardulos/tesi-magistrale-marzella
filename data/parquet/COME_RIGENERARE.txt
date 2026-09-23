@@ -1,0 +1,26 @@
+data/parquet/ — come rigenerare unsw_raw.parquet
+
+Il file supera il limite rigido di 100 MB per file di GitHub.
+La compressione non aiuta
+
+COMANDO
+-------
+  python preprocessing.py configs/preprocessing/ingest.yaml --override dataset=unsw
+
+SORGENTE
+--------
+  data/raw/NF-UNSW-NB15-v3.csv  (550,6 MB)
+
+Anch'essa fuori dal repository. È il dataset accademico NF-UNSW-NB15-v3, scaricabile dalla fonte
+(University of Queensland).
+
+ESITO ATTESO
+------------
+  dimensione   : 136,9 MB
+  forma        : 2 365 424 righe x 55 colonne
+  compressione : SNAPPY
+  sha256       : 1d3fd4e1bf167b1ed3716618c4e14df925a5289139125e54c1a4dce5c2073f6d
+  tempo        : circa 13 s
+
+Se lo sha256 non corrisponde, la sorgente non è quella attesa: fermarsi e verificarla prima di
+proseguire con gli stage a valle, perché ogni risultato della pipeline dipende da questo artefatto.

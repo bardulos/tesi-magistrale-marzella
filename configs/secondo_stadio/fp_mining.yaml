@@ -1,0 +1,28 @@
+# configs/secondo_stadio/fp_mining.yaml — hardening del PA per hard-negative mining (P6, cap3).
+#
+# STATUS ILLUSTRATIVE: eseguibile solo dopo P5 (finalista selezionato al GATE D: base_weights,
+# model_config) e GATE B (mlp_fixed dal vincitore P1). Rimuovere `status: illustrative` al
+# congelamento. K/k_min/n_max = canonici legacy (K copie EXTRA -> molteplicita' x(K+1);
+# auto-stop se il guadagno MCC_bal del round e' < k_min). Il TEST e' interrogato UNA volta,
+# sul best-round, e SOLO con confirm_test: true (GATE E).
+status: illustrative
+
+stage: fp_mining
+out_dir: runs/secondo_stadio/fp_mining
+
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+l1l2_csv: runs/dae/output_569/l1l2_table.csv   # tau_dae, sorgente unica
+
+# ---- Finalista (GATE D) — COMPILARE ----
+# base_weights: <pesi del finalista, round 0>
+# model_config: {h1: ..., n_layers: ..., delta: ..., alpha_lo: ..., alpha_hi: ...}
+# mlp_fixed:    {ratio: ..., lr: ..., dropout: ..., l2_reg: ...}   # dal vincitore P1
+
+K: 4
+k_min: 0.002
+n_max: 5
+seed: 42
+
+confirm_test: false            # true SOLO alla valutazione finale dichiarata (GATE E)
+# labels_test: runs/preprocessing/test_npy/test_Attack.npy

@@ -1,0 +1,34 @@
+# Ricerca iperparametri DAE su metrica threshold-free AUC-PR (repov6).
+# Topologia: worker = nodo1..5 (bit-exact); driver = workstation. ray_address=auto si attacca
+# al cluster gestito dall'utente (solo-VPS). Per il dry-run (Step 5): override
+# ray_address=local + shard piccolo.
+stage: search
+study_name: dae_search          # niente suffisso di versione (unica versione)
+out_dir: runs/dae/search
+
+# Dati (assoluti, presenti su tutti i nodi)
+shard_dir: <HOME>/dae_data_91
+val_X: <HOME>/dae_data_91/val_X.npy
+val_y: <HOME>/dae_data_91/val_y.npy
+
+# Optuna / ASHA
+n_trials: 400
+# 75 random in startup = 75 slot reali (5 VPS x 15 core): i primi 75 partono a vuoto
+# (nessun risultato ancora tornato -> niente densita' per il TPE) -> tanto vale random.
+# Dal 2 giro il TPE lavora sui 75 risultati tornati. (Il constant_liar evita doppioni
+# tra worker concorrenti in fase-TPE; irrilevante in startup.)
+n_startup_trials: 75            # TPE puro, niente warm-start
+max_concurrent_trials: 75       # = 5 VPS x 15 core (cpu_per_trial=1)
+cpu_per_trial: 1
+grace_period: 4                 # rung unico al 4 seme
+reduction_factor: 2
+seed: 42
+ray_address: auto
+resume: auto
+verbose: 1
+
+# Training
+max_epochs: 100
+patience: 17                    # PROVVISORIO (B3): placeholder per il dry-run, NON il valore
+                                # finale — taratura definitiva dalle traiettorie AUC-PR (Step 5).
+batch: 512

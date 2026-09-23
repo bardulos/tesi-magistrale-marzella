@@ -1,0 +1,30 @@
+# configs/secondo_stadio/pseudo_placement.yaml — collocazione delle pseudo nel piano 2D (P7).
+#
+# STATUS ILLUSTRATIVE: eseguibile solo col finalista congelato (GATE D). Gate di fedelta'
+# dell'un-whitening (<=1e-4 sui benigni) BLOCCANTE prima di fidarsi dei numeri delle pseudo.
+status: illustrative
+
+stage: pseudo_placement
+out_dir: runs/secondo_stadio/pseudo_placement
+
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+
+# ---- Finalista #589, seme di produzione 2037 (GATE D compilato 2026-07-06) ----
+pa_weights: runs/secondo_stadio/weights_final/21a2e100/seed_2037/best.weights.h5
+model_config:
+  exp: 3.928824460722608
+  n_layers: 2
+  ratio: 0.6159888054811458
+  dropout: 0.27477804731454736
+  delta: 0.09261080547245101
+  alpha_lo: 1.9481223527402847
+  alpha_hi: 3.079948793054766
+mlp_fixed:
+  ratio: 0.6
+  lr: 0.0005
+  dropout: 0.1
+  l2_reg: 1.0819231482664046e-06
+
+seed: 42
+n_pool: 50000

@@ -1,0 +1,11 @@
+# Cache DAE su UNSW dal modello RI-ADDESTRATO su benigni UNSW (NON il CSE congelato).
+# Forward del DAE #569 seme 2024 (mediano UNSW) su val+test UNSW. Whitening Ledoit-Wolf e z-scaler
+# FITTATI SUI BENIGNI UNSW (niente apply_from: ogni dominio calibra i propri parametri). Il phi
+# risultante è nello spazio proprio di UNSW; il PA va ri-addestrato su questo phi.
+# MCC attesa ~0,97 (coerente con runs/unsw_local/results/569_seed2024.csv).
+weights: runs/unsw_local/results/569_seed2024.weights.h5
+val_dir: runs/unsw_local/data
+val_attack: runs/dae/output_569_unsw/val_attack.npy
+test_dir: runs/unsw_local/data
+out_dir: runs/dae/output_569_unsw_retrain
+threads: 16

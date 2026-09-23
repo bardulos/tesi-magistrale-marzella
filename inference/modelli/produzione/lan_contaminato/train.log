@@ -1,0 +1,22 @@
+=== avvio 2026-07-22T16:51:16+02:00 ===
+[16:52:00] benigni: 2,966,479 righe (riferimento canonico CSE 1,755,000)
+[16:52:00] passo 1 — pool: gradiente=2411479 (81.3%) monitor=200000 (6.7%) select=355000 (12.0%) [frazioni monitor 11% clamp (30000, 200000), select 20% clamp (50000, 355000)]
+[16:52:00] passo 2 — DAE + EntropyStop sulla contaminazione naturale del dataset
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1784731921.109553 1188192 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1784731921.149731 1188192 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1784731922.124691 1188192 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1784731923.049447 1188192 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+W0000 00:00:1784731924.041969 1188192 cpu_allocator_impl.cc:82] Allocation of 877778356 exceeds 10% of free system memory.
+[17:01:07] passo 2 — DAE fermato a epoca 34/60 via EntropyStop (TV/range(H_L)=1.51, soglia 5.0)
+[17:01:09] passo 3 — whitening Ledoit-Wolf + z-scaler fittati sulla phi del DAE (select, 355000 righe)
+[17:01:23] passo 4 — 200000 pseudo-monitor (PA_GEN_MONITOR) dal pool monitor
+[17:34:05] passo 5 — PA fermato a epoca 47 via patience-15 (BCE-monitor min=0.02729)
+[17:34:49] passo 6 — hardening auto-stop al round 1 (Delta<0.002)
+[17:34:49] passo 6 — hardening completato (10273 FP minati cumulativi, 1 round)
+[17:34:56] passo 7 — fusione calibrata (ricetta a percentili sui benigni-select) -> soglie.json
+[17:34:56] N2 — FPR realizzato sul monitor (holdout, 200000 righe): Mod A 0.4430%  Mod B 1.0715%  [selezione seme a deploy: minimo FPR Mod A, tie-break Mod B]
+[17:34:56] FATTO — modello scritto in modelli/sperimentali/lan_contaminato_seed50_redo (dae.npz, pa.npz, soglie.json, metadati, train_report.json)
+=== EXIT=0 2026-07-22T17:34:57+02:00 ===

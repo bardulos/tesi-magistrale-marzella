@@ -1,0 +1,45 @@
+data/raw/ — i CSV grezzi: cosa c'era e come recuperarli
+
+Nella cartella di lavoro originale questa cartella conteneva i sei file elencati sotto. Nessuno è
+pubblicato: i due dataset accademici superano il limite rigido di 100 MB per file di GitHub e si
+scaricano dalla fonte; i tre file della cattura di rete privata dell'autore non sono distribuiti.
+
+DATASET PUBBLICI (The University of Queensland)
+-----------------------------------------------
+-  NF-CICIDS2018-v3.csv    versione NetFlow v3 di CSE-CIC-IDS2018
+    sha256 : 242a6971cc801eae621b1fc4d966db2cd0af9cc866805f36a6fc5d0058dfbb74
+-  NF-UNSW-NB15-v3.csv     versione NetFlow v3 di UNSW-NB15
+    sha256 : 4ebb97bd74412d566137d95a6fc3ffd8f374f1cf8cfe204d007848e7a668f9b5
+  NetFlow_v3_Features.csv descrizione delle feature del formato
+  NetFlow v3 (Feature, Description);
+  non letta dalla pipeline
+    sha256 : abe3ce6e6ff731d72d76e029b512585c0dbcbd8e03ff6dbe2bd04b560723bd67
+
+  Fonti (dettagli, citazioni e termini d'uso in inference/dati/PROVENIENZA.txt):
+    NF-CSE-CIC-IDS2018-v3   doi: 10.48610/ece9b83   https://doi.org/10.48610/ece9b83
+    NF-UNSW-NB15-v3         doi: 10.48610/6e0eda1   https://espace.library.uq.edu.au/view/UQ:6e0eda1
+    pagine della raccolta   https://staff.itee.uq.edu.au/marius/NIDS_datasets/
+
+  I due CSV vanno messi qui con ESATTAMENTE CON GLI STESSI NOMI: la pipeline li legge da data/raw/ con i
+  nomi fissati in lib/preprocessing/data.py (dataset cse -> NF-CICIDS2018-v3.csv, dataset
+  unsw -> NF-UNSW-NB15-v3.csv). Se lo sha256 non corrisponde, la sorgente non è quella usata
+  nella tesi: fermarsi e verificarla prima di proseguire, perché ogni risultato della pipeline
+  dipende da questi file.
+
+CATTURA DI RETE PRIVATA [NON DISTRIBUITA]
+-----------------------------------------
+  file_benigni.csv     644,8 MB   flussi benigni della cattura LAN dell'autore
+  file_sospetti.csv     29,7 MB   flussi sospetti della stessa cattura
+  file_unito.csv       674,5 MB   unione dei due (file_benigni + file_sospetti)
+
+  Non si recuperano: contengono traffico di una rete privata. Gli script di cattura e di unione
+  sono in inference/sniffing/; i derivati lan_* sono descritti in inference/dati/PROVENIENZA.txt.
+
+USO
+---
+Il preprocessing parte dallo stage di ingest:
+    python preprocessing.py configs/preprocessing/ingest.yaml                         (CSE)
+    python preprocessing.py configs/preprocessing/ingest.yaml --override dataset=unsw   (UNSW)
+
+e prosegue con gli stage encode, audit, reduce e transform (config in configs/preprocessing/).
+L'esito atteso dell'ingest UNSW è in data/parquet/COME_RIGENERARE.txt.

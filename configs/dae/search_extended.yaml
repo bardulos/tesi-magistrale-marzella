@@ -1,0 +1,50 @@
+# FASE 1 — Search ALLARGATA (+200 trial, btl[6,16]/exp[40,256]) su AUC-PR (repov6).
+# Nuovo studio PULITO in out_dir dedicato (non resume del DB a 400 -> niente prior denso
+# sulla zona vecchia). Warm-start via ENQUEUE BATCH: config traslate (dai top del DB 400) +
+# random nella regione nuova; niente import-storia. Salvataggio pesi per-seme (FASE 3).
+stage: search
+study_name: dae_search          # unica versione; DB distinto per via di out_dir
+out_dir: runs/dae/search_600
+
+# Dati (assoluti, presenti su tutti i nodi worker)
+shard_dir: <HOME>/dae_data_91
+val_X: <HOME>/dae_data_91/val_X.npy
+val_y: <HOME>/dae_data_91/val_y.npy
+
+# Optuna / ASHA
+n_trials: 600                   # 400 (pregressi, backup) + 200 nuovi; informativo
+n_new_trials: 200               # NUOVI trial da eseguire in questa run
+# n_startup alto: i primi 120 trial restano enqueued/random prima che il TPE prenda il
+# controllo -> la regione allargata viene coperta a inizio run (poi il TPE lavora sui ritorni).
+n_startup_trials: 120
+max_concurrent_trials: 80       # = 5 VPS x 16 core (slot reali; cpu_per_trial=1)
+cpu_per_trial: 1
+grace_period: 4                 # rung unico al 4 seme
+reduction_factor: 2
+seed: 42
+ray_address: auto
+resume: auto
+verbose: 1
+
+# Warm-start: import della STORIA (tutte le 400 pregresse come prior del TPE: spazio allargato in
+# modo continuo -> il prior indica la tendenza btl/exp verso l'alto, non la soffoca) + enqueue di
+# traslate (top) e random (regione allargata).
+warmstart:
+  db_path: runs/dae/search_400/optuna_study.db
+  study_name: dae_search
+  import_history: true
+  n_random: 80
+  rng_seed: 0
+
+# Salvataggio pesi per-seme (best-epoch dei COMPLETE) — abilita FASE 2/3
+save_weights: true
+# Radice DUREVOLE dei pesi nella HOME del worker (mai /tmp/ray, che un crash del VPS azzera).
+# I pesi finiscono in <weights_home>/<trial_id>/seed_<s>/best.weights.h5; si raccolgono in locale
+# (runs/) con tools/sync_weights_from_vps.sh.
+weights_home: <HOME>/repov6_weights
+
+# Training (coerente con la search 400 che fornisce il warm-start)
+max_epochs: 100
+patience: 18
+non_learning_margin: 0.05
+batch: 512

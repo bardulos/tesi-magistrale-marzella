@@ -1,0 +1,44 @@
+# configs/secondo_stadio/sup_search.yaml — ricerca del ceiling supervisionato (P1, cap3).
+#
+# Protocollo congelato al GATE A (D1-D11). Note vincolanti:
+# - I trial potati da ASHA sono PRUNED nel DB (PruningAwareOptunaSearch); il TPE di
+#   Optuna 4.8 li include nel fit col valore-al-rung: scelta accettata e dichiarata.
+# - MCC_bal e' calcolato alla prevalenza di RIFERIMENTO (nativa del val, pi~0,3709) —
+#   MAI chiamarla "prevalenza di deployment" (D5); e' colonna INFORMATIVA, mai selettiva.
+# - Il TEST non entra mai nella ricerca; il gap ceiling<->PA definitivo si misura sul test
+#   una volta, a valle (D8).
+# - LANCIO GATED: richiede cluster Ray attivo, gate di sync per-VPS e smoke aggregate
+#   workstation<->VPS prima di ogni esecuzione.
+
+stage: sup_search
+study_name: mlp_sup_search
+out_dir: runs/secondo_stadio/sup_search
+
+# ---- Dati (cache del primo stadio congelato #569/2034 + etichette per-classe) ----
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+
+# ---- Motore (chiavi generiche lib/search/engine.py) ----
+n_trials: 400                 # (era 200) budget raddoppiato su direttiva maintainer
+n_startup_trials: 48          # D4: warmup TPE assoluto (~12% di 400); non scalato col budget
+max_concurrent_trials: 200    # cap-margine (convenzione): Ray scala coi core reali (80 CPU VPS)
+cpu_per_trial: 1
+grace_period: 4               # rung unico a 4 semi (SUP: grace=4, rf=2, max_t=6 come il DAE)
+reduction_factor: 2
+seed: 42
+ray_address: auto
+resume: none
+verbose: 1
+
+# ---- Pesi per (trial, seme): HOME durevole del worker, MAI /tmp ----
+save_weights: true
+weights_home: <HOME>/repov6_weights_s2
+
+# ---- Componente (fissi GATE A; i 5 iperparametri cercati vivono in constants.py) ----
+max_epochs: 100               # D10
+patience: 15                  # D1: ES per-epoca su AUC-PR del selection set (mai MCC)
+batch: 512                    # D3
+l2_reg: 1.0819231482664046e-06  # D3: inerte, il regolarizzatore cercato e' il dropout
+es_n_attacks: 50000           # D7: subsample per-epoca; fine seme su att_select completo
+split_seed: 0                 # D2: split FISSO benigni 80/20 + attacchi 80/20
+val_frac: 0.2

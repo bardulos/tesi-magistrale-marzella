@@ -1,0 +1,40 @@
+# configs/secondo_stadio/wp4v2_es_search.yaml — WP-4_v2: calibrazione del criterio d'arresto
+# label-free del PA, sul motore Ray+Optuna+ASHA condiviso (lib/search/engine.py).
+#
+# Forward-only: i pesi del PA #589 sono congelati (Fase 0, per-epoca in runs/.../wp4v2_repass); qui
+# non si allena nulla. Obiettivo del trial (delta, alpha_lo, alpha_hi) = mediana su 19 semi del
+# Delta_AP al punto di stop label-free (history_ap[stop] - max(history_ap), <=0), direction=maximize.
+# ASHA pota sui SEMI (time_attr=seeds_completed): rung a 7 e 14 su 19 (grace=7, rf=2). PRUNED
+# veritiero via PruningAwareOptunaSearch (gia' nel motore). Storage sqlite centralizzato sul head
+# (out_dir/optuna_study.db), leggibile da optuna-dashboard.
+#
+# Lancio (da workstation, il driver Ray gira sul head num-cpus=0 e distribuisce i trial sui 5 nodi):
+#   nohup python secondo_stadio.py configs/secondo_stadio/wp4v2_es_search.yaml > driver.log 2>&1 &
+# GATED: sync gate lib/ + presenza precalc su ogni nodo prima del lancio.
+
+stage: wp4v2_es_search
+study_name: wp4v2_es
+out_dir: runs/secondo_stadio/wp4v2_search/ray
+
+# ---- Dati: cache #569 (benigni-monitor) + artefatti Fase 0/1 (letti dai worker sul FS locale) ----
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+repass_dir: runs/secondo_stadio/wp4v2_repass        # history_ap (oracolo, Fase 0)
+precalc_dir: runs/secondo_stadio/wp4v2_search/precalc  # pesi consolidati + benign_scores (Fase 1)
+mon_n: 200000
+mon_seed_v2: 20260710
+split_seed: 0
+val_frac: 0.2
+patience: 15                  # stop realistico label-free (uguale al deploy)
+
+# ---- Motore (chiavi generiche lib/search/engine.py) ----
+n_trials: 2000                # budget pieno (direttiva utente 2026-07-11); ASHA dimezza il costo medio
+n_startup_trials: 100         # TPE random iniziali (spazio 3-dim)
+max_concurrent_trials: 80     # tutti gli 80 core del cluster (5x16); RAM ok (~1,3G/worker misurato)
+cpu_per_trial: 1
+grace_period: 7               # rung ASHA a 7 e 14 semi (max_t=19, rf=2)
+reduction_factor: 2
+seed: 20260712                # base sampler TPE (WP4V2_OPTUNA_SEED)
+ray_address: auto
+resume: none
+verbose: 1

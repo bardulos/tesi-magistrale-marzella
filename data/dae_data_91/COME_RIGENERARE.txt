@@ -1,0 +1,33 @@
+data/dae_data_91/ — gli array del DAE: cosa c'era e come rigenerarli
+File troppo grande per entrare nel repo
+
+Nella cartella di lavoro originale questa cartella conteneva i tre array numpy su cui si addestra e
+si valida il DAE, con le 91 feature del preprocessing CSE.
+Non sono pubblicati:
+
+- train_shard_00.npy   4 806,4 MB   float32   13 845 915 x 91   righe di addestramento (tutte benigne)
+    sha256 : f354493f21b83c1adaaeb7f3f4a42ebf196b5ebfea7e0005cd5bf0ab7e208fc1
+- val_X.npy              979,6 MB   float32    2 821 853 x 91   righe di validazione
+    sha256 : cf1ca71711844cdf72eed2ef79966ea0d484c019cb536bd9ac0b04aec3b20f42
+- val_y.npy                2,7 MB   int8       2 821 853        etichetta binaria (0 benigno, 1 attacco)
+    sha256 : c5cfdeb3f5f43ec94ef1876443bd6d507915a5ef78ecbf04dd125ad78ccddbc0
+
+DOVE LI CERCA IL CODICE
+-----------------------
+  I config e i tool li leggono da <HOME>/dae_data_91, non da questa cartella: configs/dae/search.yaml
+  e le sue varianti, configs/dae/output_cache.yaml, tools/gate_569_bitexact.py. Dopo la
+  rigenerazione vanno messi lì; nei config il percorso si può cambiare con --override.
+
+COME RIGENERARLI
+----------------
+  1. I CSV grezzi CSE in data/raw/ (v. data/raw/COME_RECUPERARE.txt).
+  2. Il preprocessing CSE con preprocessing.py: stage ingest, encode, audit, reduce e transform
+     (config in configs/preprocessing/). Lo stage transform scrive train.npz, val.npz e
+     val_labels.npz in runs/preprocessing/transform_cse/.
+  3. La conversione:
+       train_shard_00.npy = train.npz["X"].astype(float32)
+       val_X.npy          = val.npz["X"].astype(float32)
+       val_y.npy          = val_labels.npz["Label"].astype(int8)
+     È la stessa ricetta di tools/materialize_test_npy.py per il test; sui file originali è stata
+     verificata bit per bit.
+  Se gli sha256 non corrispondono, fermarsi e verificare gli stage a monte.

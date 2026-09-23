@@ -1,0 +1,8 @@
+# Reduce: encoded.parquet → post_audit.parquet + feature_types_post_audit.json.
+# Droppa 6 feature flagged da audit + crea has_ttl/has_tcp_win_out.
+# Default CSE; per UNSW override primary, schema_from, out_dir.
+stage: reduce
+
+primary: runs/preprocessing/encode_cse/cse_encoded.parquet
+schema_from: runs/preprocessing/encode_cse/feature_types.json
+out_dir: runs/preprocessing/reduce_cse

@@ -1,0 +1,9 @@
+# Audit DI SCOPERTA: 7 analisi sul parquet ENCODED pre-reduce (le 6 feature poi
+# rimosse da reduce esistono ancora qui → la narrativa di scoperta §11 vede gli
+# artefatti prima della rimozione). UNSW encoded come confronto distribuzionale.
+stage: audit
+
+primary: runs/preprocessing/encode_cse/cse_encoded.parquet
+schema_from: runs/preprocessing/encode_cse/feature_types.json
+compare: runs/preprocessing/encode_unsw/unsw_encoded.parquet
+out_dir: runs/preprocessing/audit_encoded_cse

@@ -1,0 +1,12 @@
+# Encode: parquet grezzo → parquet codificato + feature_types.json.
+# Default CSE; per UNSW si fa override con primary + out_dir + schema_from
+# (schema di CSE già prodotto).
+stage: encode
+
+primary: data/parquet/cse_raw.parquet
+out_dir: runs/preprocessing/encode_cse
+# schema_from: omesso → CSE genera il proprio schema
+# Override per UNSW:
+#   --override primary=data/parquet/unsw_raw.parquet
+#   --override out_dir=runs/preprocessing/encode_unsw
+#   --override schema_from=runs/preprocessing/encode_cse/feature_types.json

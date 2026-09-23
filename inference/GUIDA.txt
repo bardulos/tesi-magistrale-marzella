@@ -1,0 +1,99 @@
+NIDS a due stadi (DAE + classificatore) - guida rapida
+
+Rileva flussi anomali nei CSV di nProbe (NetFlow v3); per ogni allarme indica
+le feature responsabili. Solo CPU.
+
+CONTENUTO
+  install.sh    crea infer_venv (inferenza, numpy) e train_venv (TensorFlow)
+  main.py       menu interattivo; usa da sé il venv giusto
+  infer.py      inferenza
+  train.py      riaddestramento di un seme
+  dati/         CSV: inferenza/  benchmark/  addestramento/ (da creare)
+  modelli/      produzione/  sperimentali/
+  sniffing/     cattura.sh (nProbe), unione.sh (unisce i CSV di sniffing/csv/)
+
+INSTALLAZIONE
+  bash install.sh [infer|train|all]    senza argomenti chiede per ogni venv
+  Richiede python3.12. infer.py e train.py si lanciano col Python del venv:
+    infer_venv/bin/python infer.py ...
+    train_venv/bin/python train.py ...
+
+MENU
+  python main.py [--n-seeds N]
+    1  inferenza (file o live)
+    2  riaddestramento label-free su un CSV di dati/addestramento/: N semi in
+       modelli/sperimentali/NOME_seedS, il migliore (FPR sul monitor) passa
+       in modelli/produzione/NOME
+    3  cattura traffico (nProbe)
+    4  benchmark (throughput e grafici)
+    --n-seeds N   semi totali del riaddestramento (default: dalla RAM)
+
+INFERENZA
+  infer.py [--live | --batch FILE | --test] [--mode A|B] [--model NOME]
+    --live            cattura dal vivo (predefinito); richiede nProbe, non
+                      incluso
+    --batch FILE      analizza un CSV nProbe esistente
+    --test            metriche su dati/inferenza/<modello>_test_raw.csv,
+                      nessun allarme; nel pacchetto c'è solo il test unsw
+                      (cse: dati/rigenera_dataset_grandi.sh)
+    --mode A|B        modalità d'allarme (default A)
+    --model NOME      modello in modelli/produzione/ o modelli/sperimentali/
+                      (default: modelli/active_dataset.txt, poi cse;
+                      con --test: unsw)
+    --iface IF        interfaccia in --live (default: NIC della rotta
+                      predefinita; con port-mirroring indicare la NIC del
+                      mirror)
+    --alert-log FILE  tabella completa degli allarmi, in append (default:
+                      alert.log accanto a infer.py; mai in --test)
+    --sigma-k K       soglia in sigma delle feature riportate (default 3.0)
+    --bench ...       benchmark: v. dati/benchmark/BENCH_README.txt
+  Allarme: ora dell'analisi, IP e porte, protocollo, feature più anomale per
+  famiglia, ramo che l'ha fatto scattare. Console: le prime 3 feature;
+  alert.log: tutte.
+  In --live stampa periodicamente la percentuale di flussi in allarme e
+  cancella i CSV analizzati.
+
+MODALITÀ
+  A   FPR minimo, pochi allarmi. Predefinita; è la regola documentata in tesi.
+  B   alta recall, più allarmi; FPR 4,7% sul test CSE, quindi poco utile.
+      Non documentata in tesi.
+
+RIADDESTRAMENTO
+  Senza etichette: l'arresto lo decidono EntropyStop e le pseudo-anomalie.
+    mkdir -p modelli/sperimentali/NOME
+    train.py --dataset FILE.csv --out-dir modelli/sperimentali/NOME [--seed N]
+  poi:
+    infer.py --batch FILE.csv --model NOME
+
+    --dataset FILE     CSV nProbe grezzo del traffico locale
+    --out-dir DIR      cartella del modello: deve esistere, sotto
+                       modelli/sperimentali/ (infer.py cerca solo lì e in
+                       modelli/produzione/)
+    --seed N           seme (default 42)
+    --force            prosegue sotto 100 000 flussi (sconsigliato)
+    --weights-src DIR  metadati di preprocessing (default:
+                       modelli/produzione/cse)
+
+  Vincoli:
+    RAM   almeno 16 GB, senza deroghe. Per seme: ~2 GB di TensorFlow più
+          ~1,2 KB per flusso (~5 GB a 3 milioni di flussi). main.py sceglie
+          quanti semi in parallelo in base alla RAM.
+          L'inferenza gira in circa 50 MB.
+    dati  sotto 500 000 flussi avviso, sotto 100 000 blocco.
+  Note:
+    Il riaddestramento rinnova i pesi; ordine delle feature, scaler e
+    trasformazioni log restano quelli di laboratorio (--weights-src).
+    EntropyStop valuta i primi 262 144 flussi del pool di addestramento (~22%
+    della cattura a 1,75 milioni di flussi): un fenomeno assente lì non
+    influenza l'arresto.
+
+CATTURA LOCALE
+  Per un deploy reale serve una cattura della LAN di destinazione.
+  In laboratorio: una settimana, switch ZYXEL GS1200-5v3 in port-mirroring fra
+  router e LAN. Con la cattura sul solo PC le prestazioni sono inferiori.
+  Cattura per l'addestramento (non --live, che cancella i CSV):
+    python main.py -> 3,  oppure  sudo bash sniffing/cattura.sh
+  Unione dei CSV (prima sostituire <IP_LAN_1..4> in unione.sh con gli IP da
+  escludere):
+    cd sniffing/csv && bash ../unione.sh
+  poi copiare file_filtrato.csv in dati/addestramento/.

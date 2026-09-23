@@ -1,0 +1,8 @@
+# Dipendenze di TRAINING/VISUALIZZAZIONE
+# train_venv (Python 3.12): TensorFlow + scikit-learn per il retrain, matplotlib/seaborn per i grafici.
+
+numpy==2.4.4
+tensorflow==2.21.0
+scikit-learn==1.8.0
+matplotlib==3.10.8
+seaborn==0.13.2

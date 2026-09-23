@@ -1,0 +1,6 @@
+# Stats: statistiche descrittive per-feature raw (richiede colonna Label).
+# Output: log + out_dir/feature_stats.json. Default CSE; per UNSW: --override dataset=unsw out_dir=...
+stage: stats
+
+dataset: cse
+out_dir: runs/preprocessing/stats_cse

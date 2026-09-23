@@ -1,0 +1,172 @@
+{
+  "L4_SRC_PORT": {
+    "mean": 49791.47845483668,
+    "std": 15898.955073507625,
+    "non_zero_only": false
+  },
+  "L4_DST_PORT": {
+    "mean": 2804.5747456199174,
+    "std": 8787.641769284455,
+    "non_zero_only": false
+  },
+  "IN_BYTES": {
+    "mean": 5.4661054611206055,
+    "std": 1.4624160528182983,
+    "non_zero_only": false
+  },
+  "IN_PKTS": {
+    "mean": 1.4737341403961182,
+    "std": 0.8674789667129517,
+    "non_zero_only": false
+  },
+  "OUT_BYTES": {
+    "mean": 5.415740966796875,
+    "std": 2.4301598072052,
+    "non_zero_only": false
+  },
+  "OUT_PKTS": {
+    "mean": 1.3281837701797485,
+    "std": 0.9489006996154785,
+    "non_zero_only": false
+  },
+  "FLOW_DURATION_MILLISECONDS": {
+    "mean": 13003.896728024114,
+    "std": 33018.13065183423,
+    "non_zero_only": false
+  },
+  "DURATION_IN": {
+    "mean": 12923.855580653211,
+    "std": 33004.66251682426,
+    "non_zero_only": false
+  },
+  "DURATION_OUT": {
+    "mean": 12521.89925656773,
+    "std": 32691.946193319887,
+    "non_zero_only": false
+  },
+  "MAX_TTL": {
+    "mean": 114.30670601711904,
+    "std": 24.6950326305424,
+    "non_zero_only": true
+  },
+  "LONGEST_FLOW_PKT": {
+    "mean": 477.71205442182765,
+    "std": 537.4478399999623,
+    "non_zero_only": false
+  },
+  "SHORTEST_FLOW_PKT": {
+    "mean": 3.948997735977173,
+    "std": 0.29740023612976074,
+    "non_zero_only": false
+  },
+  "MIN_IP_PKT_LEN": {
+    "mean": 47.5166174283173,
+    "std": 22.45701963580846,
+    "non_zero_only": false
+  },
+  "SRC_TO_DST_SECOND_BYTES": {
+    "mean": 0.9903849363327026,
+    "std": 1.6401923894882202,
+    "non_zero_only": false
+  },
+  "DST_TO_SRC_SECOND_BYTES": {
+    "mean": 0.7511889338493347,
+    "std": 1.4285013675689697,
+    "non_zero_only": false
+  },
+  "RETRANSMITTED_IN_BYTES": {
+    "mean": 0.45629623532295227,
+    "std": 1.5378272533416748,
+    "non_zero_only": false
+  },
+  "RETRANSMITTED_OUT_BYTES": {
+    "mean": 0.18172743916511536,
+    "std": 1.0279619693756104,
+    "non_zero_only": false
+  },
+  "SRC_TO_DST_AVG_THROUGHPUT": {
+    "mean": 10.03748607635498,
+    "std": 2.959578037261963,
+    "non_zero_only": false
+  },
+  "DST_TO_SRC_AVG_THROUGHPUT": {
+    "mean": 9.159064292907715,
+    "std": 4.284754753112793,
+    "non_zero_only": false
+  },
+  "NUM_PKTS_UP_TO_128_BYTES": {
+    "mean": 1.726627230644226,
+    "std": 0.9108055830001831,
+    "non_zero_only": false
+  },
+  "NUM_PKTS_128_TO_256_BYTES": {
+    "mean": 0.5827960968017578,
+    "std": 0.6143215894699097,
+    "non_zero_only": false
+  },
+  "NUM_PKTS_256_TO_512_BYTES": {
+    "mean": 0.28144291043281555,
+    "std": 0.4712308943271637,
+    "non_zero_only": false
+  },
+  "NUM_PKTS_512_TO_1024_BYTES": {
+    "mean": 0.23106129467487335,
+    "std": 0.39869481325149536,
+    "non_zero_only": false
+  },
+  "NUM_PKTS_1024_TO_1514_BYTES": {
+    "mean": 0.29471346735954285,
+    "std": 0.6392813324928284,
+    "non_zero_only": false
+  },
+  "TCP_WIN_MAX_OUT": {
+    "mean": 37507.05362940241,
+    "std": 24473.908913467567,
+    "non_zero_only": true
+  },
+  "DNS_TTL_ANSWER": {
+    "mean": 1.5215823650360107,
+    "std": 1.8880671262741089,
+    "non_zero_only": false
+  },
+  "SRC_TO_DST_IAT_MIN": {
+    "mean": 0.9166614413261414,
+    "std": 1.829329252243042,
+    "non_zero_only": false
+  },
+  "SRC_TO_DST_IAT_MAX": {
+    "mean": 4742.463158556152,
+    "std": 13632.216075472032,
+    "non_zero_only": false
+  },
+  "SRC_TO_DST_IAT_AVG": {
+    "mean": 3.2911570072174072,
+    "std": 3.276782274246216,
+    "non_zero_only": false
+  },
+  "SRC_TO_DST_IAT_STDDEV": {
+    "mean": 1659.6362973483515,
+    "std": 4839.386100908655,
+    "non_zero_only": false
+  },
+  "DST_TO_SRC_IAT_MIN": {
+    "mean": 1.3211860656738281,
+    "std": 2.3487613201141357,
+    "non_zero_only": false
+  },
+  "DST_TO_SRC_IAT_MAX": {
+    "mean": 4534.791450041402,
+    "std": 13476.953361603762,
+    "non_zero_only": false
+  },
+  "DST_TO_SRC_IAT_AVG": {
+    "mean": 2.854207992553711,
+    "std": 3.422945499420166,
+    "non_zero_only": false
+  },
+  "DST_TO_SRC_IAT_STDDEV": {
+    "mean": 1450.9261174866378,
+    "std": 4520.303009977459,
+    "non_zero_only": false
+  }
+}

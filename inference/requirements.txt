@@ -1,0 +1,4 @@
+# Runtime di INFERENZA (infer.py) — macchina di deploy, Python 3.12 (infer_venv).
+# infer.py e' numpy-only by design; monoprocesso, parallelismo interno al BLAS.
+
+numpy==2.5.1
