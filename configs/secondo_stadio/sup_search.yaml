@@ -1,0 +1,34 @@
+# Optuna 4.8 include nel modello TPE i trial fermati da ASHA usando il valore del rung.
+# MCC_bal usa la prevalenza di riferimento della validation ed è solo descrittiva. Il test
+# resta fuori dalla ricerca; il confronto finale si esegue una volta. Avviare dopo aver
+# sincronizzato i file e verificato il cluster Ray.
+
+stage: sup_search
+study_name: mlp_sup_search
+out_dir: runs/secondo_stadio/sup_search
+
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+
+n_trials: 400
+n_startup_trials: 48
+max_concurrent_trials: 200    # Cap; Ray scales to available VPS cores.
+cpu_per_trial: 1
+grace_period: 4
+reduction_factor: 2
+seed: 42
+ray_address: auto
+resume: none
+verbose: 1
+
+# Conserva i pesi nella HOME persistente del worker, non in /tmp.
+save_weights: true
+weights_home: <HOME>/repov6_weights_s2
+
+max_epochs: 100
+patience: 15                  # arresto su AUC-PR
+batch: 512
+l2_reg: 1.0819231482664046e-06
+es_n_attacks: 50000
+split_seed: 0
+val_frac: 0.2

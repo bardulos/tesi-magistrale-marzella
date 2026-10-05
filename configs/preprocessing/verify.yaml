@@ -1,0 +1,14 @@
+# Verifica duplicati, % +SRC_PORT e coppie Spearman pre/post (dati per la heatmap) -> verify_stats.json.
+# scaler_params e transform_meta non sono letti dallo stage.
+# Default CSE; per UNSW sovrascrivere primary e out_dir e puntare encode_primary/raw_primary
+# ai file UNSW (o porli a null); schema_from resta CSE.
+stage: verify
+
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+out_dir: runs/preprocessing/verify_cse
+scaler_params: runs/preprocessing/transform_cse/scaler_params.json
+transform_meta: runs/preprocessing/transform_cse/transform_meta.json
+# encode_primary: barra +SRC_PORT (srcport_dup_pct_benign); raw_primary: continue pre-audit (heatmap pre).
+encode_primary: runs/preprocessing/encode_cse/cse_encoded.parquet
+raw_primary: data/parquet/cse_raw.parquet

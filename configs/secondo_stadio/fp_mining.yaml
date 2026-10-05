@@ -1,0 +1,27 @@
+# Configurazione d'esempio: richiede un modello PA selezionato e i parametri fissi del classificatore.
+# A ogni round i FP minati, cumulati nel pool, si aggiungono ai benigni-train in K copie extra;
+# i round si fermano quando il guadagno di pAUC_MCC scende sotto stop_threshold (default 0.002).
+# La chiave k_min non e' letta.
+# Il test viene usato solo con confirm_test: true.
+status: illustrative
+
+stage: fp_mining
+out_dir: runs/secondo_stadio/fp_mining
+
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+l1l2_csv: runs/dae/output_569/l1l2_table.csv   # tau_dae source
+
+# Modello PA selezionato:
+# base_weights: <pesi del finalista, round 0>
+# model_config: {exp|h1, n_layers, ratio, dropout, delta, alpha_lo, alpha_hi[, lr]}
+#   ratio e dropout vanno qui: il caricamento dei pesi non li legge da mlp_fixed.
+# mlp_fixed:    {lr, l2_reg}  obbligatorio e non vuoto; in training fa da fallback.
+
+K: 4
+k_min: 0.002
+n_max: 5
+seed: 42
+
+confirm_test: false            # Abilitare solo per la valutazione finale.
+# labels_test: runs/preprocessing/test_npy/test_Attack.npy

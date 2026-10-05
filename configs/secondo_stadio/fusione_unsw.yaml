@@ -1,0 +1,31 @@
+# Applica a UNSW la calibrazione usata su CSE. Richiede pa_weights compilato con i pesi
+# PA #589 addestrati su UNSW e l'approvazione del maintainer.
+status: gated
+
+stage: fusione
+out_dir: runs/secondo_stadio/fusione_unsw
+
+cache_dir: runs/dae/output_569_unsw
+labels_val: runs/dae/output_569_unsw/val_attack.npy
+labels_test: runs/dae/output_569_unsw/test_attack.npy
+l1l2_csv: runs/dae/output_569_unsw/l1l2_table.csv
+
+# Modello #589: scegliere il seme di produzione e compilare pa_weights.
+# pa_weights: runs/secondo_stadio/pa_transfer_unsw/589/cfg589_seed<SEME>/best.weights.h5
+#   Pesi gia' presenti per 8 semi, addestrati sulla cache runs/dae/output_569_unsw.
+model_config:
+  exp: 3.928824460722608
+  n_layers: 2
+  ratio: 0.6159888054811458
+  dropout: 0.27477804731454736
+  delta: 0.09261080547245101
+  alpha_lo: 1.9481223527402847
+  alpha_hi: 3.079948793054766
+mlp_fixed:
+  ratio: 0.6
+  lr: 0.0005
+  dropout: 0.1
+  l2_reg: 1.0819231482664046e-06
+
+alpha_and: 0.005
+dump_scores_npz: runs/secondo_stadio/fusione_unsw/scores.npz

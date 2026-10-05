@@ -1,0 +1,6 @@
+# Encode UNSW usando lo schema CSE: mantiene le categorie L7, i bit TCP e l'ordine delle colonne.
+stage: encode
+
+primary: data/parquet/unsw_raw.parquet
+out_dir: runs/preprocessing/encode_unsw
+schema_from: runs/preprocessing/encode_cse/feature_types.json

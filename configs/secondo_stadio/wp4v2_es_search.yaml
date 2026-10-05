@@ -1,0 +1,28 @@
+# Calibra l'arresto label-free del PA senza addestrare: usa i pesi #589 già salvati.
+# Obiettivo: mediana del Delta_AP allo stop su 19 semi. ASHA si applica ai semi completati;
+# il database SQLite è sul nodo head. Sincronizzare file e precalcoli prima del lancio.
+
+stage: wp4v2_es_search
+study_name: wp4v2_es
+out_dir: runs/secondo_stadio/wp4v2_search/ray
+
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+repass_dir: runs/secondo_stadio/wp4v2_repass
+precalc_dir: runs/secondo_stadio/wp4v2_search/precalc
+mon_n: 200000
+mon_seed_v2: 20260710
+split_seed: 0
+val_frac: 0.2
+patience: 15
+
+n_trials: 2000
+n_startup_trials: 100
+max_concurrent_trials: 80
+cpu_per_trial: 1
+grace_period: 7
+reduction_factor: 2
+seed: 20260712
+ray_address: auto
+resume: none
+verbose: 1

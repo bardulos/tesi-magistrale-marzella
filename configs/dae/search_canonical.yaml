@@ -1,0 +1,29 @@
+# Config didattico: search unica da 600 trial, non quella che ha prodotto #569.
+# Il percorso reale è documentato in search.yaml e search_extended.yaml; il vincitore
+# è riproducibile dal modello congelato, non dalla search stocastica.
+stage: search
+study_name: dae_search
+out_dir: runs/dae/search
+
+shard_dir: <HOME>/dae_data_91
+val_X: <HOME>/dae_data_91/val_X.npy
+val_y: <HOME>/dae_data_91/val_y.npy
+
+n_trials: 600
+n_startup_trials: 150
+max_concurrent_trials: 80
+cpu_per_trial: 1
+grace_period: 4
+reduction_factor: 2
+seed: 42
+ray_address: auto
+resume: none
+verbose: 1
+
+save_weights: true
+weights_home: <HOME>/repov6_weights
+
+max_epochs: 100
+patience: 18
+non_learning_margin: 0.05
+batch: 512

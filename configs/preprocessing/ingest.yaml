@@ -1,0 +1,6 @@
+# Ingest CSV → Parquet snappy senza cast, per mantenere l'output compatibile con load_dataset.
+# Default CSE; per UNSW usare --override dataset=unsw. Accetta anche [cse, unsw].
+stage: ingest
+
+dataset: cse
+out_dir: data/parquet

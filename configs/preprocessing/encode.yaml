@@ -1,0 +1,11 @@
+# Encode raw Parquet; default CSE. Per UNSW, sovrascrivere primary, out_dir e
+# schema_from con lo schema CSE già prodotto.
+stage: encode
+
+primary: data/parquet/cse_raw.parquet
+out_dir: runs/preprocessing/encode_cse
+# Omettere schema_from per generare lo schema CSE.
+# Override per UNSW:
+#   --override primary=data/parquet/unsw_raw.parquet
+#   --override out_dir=runs/preprocessing/encode_unsw
+#   --override schema_from=runs/preprocessing/encode_cse/feature_types.json

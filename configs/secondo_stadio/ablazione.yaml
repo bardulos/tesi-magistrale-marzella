@@ -1,0 +1,18 @@
+# Configurazione d'esempio: richiede scores.npz e results.json prodotti da fusione.
+# I punti operativi si scelgono su val; il test serve solo per la rendicontazione.
+status: illustrative
+
+stage: ablazione
+out_dir: runs/secondo_stadio/ablazione
+
+scores_npz: runs/secondo_stadio/fusione/scores.npz
+canonico: runs/secondo_stadio/fusione/results.json
+
+# Parametri scientifici obbligatori.
+grid_val_fpr: [0.001, 0.002, 0.003, 0.005, 0.0075, 0.01, 0.0125, 0.015, 0.02, 0.03, 0.05]
+ancore_fpr_test_basse: [0.005, 0.01]
+ancore_preset_canonici: [rec, high]
+delta_operativa: 0.005
+criteri:
+  A: "logit-solo raggiunge tutte le ancore e eguaglia la fusione entro delta_operativa"
+  B: "la fusione domina la recall a FPR appaiato (Delta >= delta_operativa in >=1 ancora)"

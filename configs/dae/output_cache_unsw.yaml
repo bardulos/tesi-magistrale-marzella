@@ -1,0 +1,9 @@
+# Applica a UNSW il whitening e lo z-scaler congelati su CSE; non rifittare su UNSW.
+# Mantiene lo spazio atteso dal PA addestrato su CSE. UNSW ha solo label binarie.
+# Esegui con tools/dae_output_cache.py (modalità apply_from); non è il secondo stadio.
+weights: runs/dae/loao_fase3/weights/569/seed_2034.weights.h5
+val_dir: runs/unsw_local/data
+test_dir: runs/unsw_local/data
+out_dir: runs/dae/output_569_unsw
+apply_from: runs/dae/output_569
+threads: 8

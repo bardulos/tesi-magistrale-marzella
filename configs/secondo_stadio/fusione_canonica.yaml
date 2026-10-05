@@ -1,0 +1,9 @@
+# Regola canonica: riusa scores.npz prodotto da fusione, senza nuovo forward. Le soglie
+# si derivano dagli score con i percentili benign-select p97/p99/p99.8 di FUSION_MODES.
+# Scrive results_canonico.json senza sovrascrivere gli artefatti congelati. Riproduce bit-exact
+# fpr_test/recall_test/mcc_bal_test di runs/secondo_stadio/fusione/results_v2.json.
+status: active
+
+stage: fusione_canonica
+out_dir: runs/secondo_stadio/fusione
+scores_npz: runs/secondo_stadio/fusione/scores.npz

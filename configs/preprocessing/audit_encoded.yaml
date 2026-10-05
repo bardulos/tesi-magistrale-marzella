@@ -1,0 +1,8 @@
+# Audit di scoperta sul parquet encoded pre-reduce, prima della rimozione delle feature.
+# Usa UNSW encoded come confronto distribuzionale.
+stage: audit
+
+primary: runs/preprocessing/encode_cse/cse_encoded.parquet
+schema_from: runs/preprocessing/encode_cse/feature_types.json
+compare: runs/preprocessing/encode_unsw/unsw_encoded.parquet
+out_dir: runs/preprocessing/audit_encoded_cse

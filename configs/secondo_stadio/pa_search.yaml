@@ -1,0 +1,38 @@
+# Ricerca del classificatore PA: architettura e generatori di pseudo-anomalie.
+# Spazio a 8 dimensioni: architettura, lr fra 1e-4 e 1e-3, delta e alpha. Le 10 configurazioni
+# di warm-start fissano architettura e lr; delta e alpha vengono campionati.
+# Obiettivo: media(MCC_bal)-deviazione standard alla prevalenza di riferimento; AUC-ROC e MCC@FPR1% sono descrittive.
+# L'arresto usa AUC-PR. Avviare dopo aver sincronizzato i file e verificato il cluster Ray.
+
+stage: pa_search
+study_name: pa_search
+out_dir: runs/secondo_stadio/pa_search
+
+cache_dir: runs/dae/output_569
+labels_val: runs/preprocessing/val_attack_npy/val_Attack.npy
+
+# Configurazioni iniziali parziali; Optuna cerca delta e alpha. L2 resta fissa.
+warmstart:
+  enqueue_configs: <HOME>/repov6_ops/pa_warmstart_diverse10.json
+
+n_trials: 600
+n_startup_trials: 48
+max_concurrent_trials: 80
+cpu_per_trial: 1
+grace_period: 4
+reduction_factor: 1.5
+seed: 42
+ray_address: auto
+resume: none
+verbose: 1
+
+# Conserva i pesi nella HOME persistente del worker, non in /tmp.
+save_weights: true
+weights_home: <HOME>/repov6_weights_s2
+
+max_epochs: 100
+patience: 15
+batch: 512
+es_n_attacks: 50000
+split_seed: 0
+val_frac: 0.2

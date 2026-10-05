@@ -1,0 +1,51 @@
+# Template: copia il blocco dello stage in un file dedicato.
+status: illustrative   # Solo template: le chiavi duplicate collasserebbero sul blocco verify; lib/cli.py rifiuta questo status.
+
+# INGEST: CSV → Parquet snappy.
+stage: ingest
+dataset: [cse, unsw]
+out_dir: data/parquet
+
+# INSPECT: statistiche per colonna sul CSV.
+stage: inspect
+dataset: cse
+out_dir: runs/preprocessing/inspect_cse
+
+# STATS: statistiche raw (richiede Label).
+stage: stats
+dataset: cse
+
+# ENCODE: Parquet raw → encoded e feature_types.json.
+stage: encode
+primary: data/parquet/cse_raw.parquet
+out_dir: runs/preprocessing/encode_cse
+# schema_from: ...           # schema CSE per UNSW
+
+# REDUCE: encoded → post_audit.
+stage: reduce
+primary: runs/preprocessing/encode_cse/cse_encoded.parquet
+schema_from: runs/preprocessing/encode_cse/feature_types.json
+out_dir: runs/preprocessing/reduce_cse
+
+# TRANSFORM: post_audit → split train/val/test e scaler.
+stage: transform
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+out_dir: runs/preprocessing/transform_cse
+# seed: 42
+# apply_from: ...            # transform CSE per modalità apply (UNSW)
+
+# AUDIT: analisi statistiche e confronto UNSW.
+stage: audit
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+compare: runs/preprocessing/reduce_unsw/unsw_post_audit.parquet
+out_dir: runs/preprocessing/audit_cse
+
+# VERIFY: duplicati e coppie Spearman; encode_primary e raw_primary abilitano le analisi opzionali.
+stage: verify
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+out_dir: runs/preprocessing/verify_cse
+# encode_primary: ...        # opzionale: % duplicati +SRC_PORT sui benigni
+# raw_primary: ...           # opzionale: Spearman pre-audit

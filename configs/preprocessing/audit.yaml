@@ -1,0 +1,7 @@
+# Audit post-reduce su CSE, con confronto distribuzionale UNSW.
+stage: audit
+
+primary: runs/preprocessing/reduce_cse/cse_post_audit.parquet
+schema_from: runs/preprocessing/reduce_cse/feature_types_post_audit.json
+compare: runs/preprocessing/reduce_unsw/unsw_post_audit.parquet
+out_dir: runs/preprocessing/audit_cse

@@ -1,0 +1,28 @@
+{
+  "seed": 50,
+  "n_benign": 2966479,
+  "dae": {
+    "stop_epoch": 34,
+    "ramo": "EntropyStop",
+    "tv_range": 1.5083871437653122
+  },
+  "pa": {
+    "stop_epoch": 47,
+    "ramo": "patience-15",
+    "bce_min": 0.02728572525648164
+  },
+  "harden": {
+    "rounds_run": 1,
+    "auto_stop": true,
+    "fp_mined_cumulative": 10273
+  },
+  "pools": {
+    "grad": 2411479,
+    "monitor": 200000,
+    "select": 355000
+  },
+  "fpr_monitor": {
+    "A": 0.00443,
+    "B": 0.010715
+  }
+}

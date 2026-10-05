@@ -1,0 +1,135 @@
+================================================================================
+ NIDS a due stadi — Guida
+================================================================================
+
+Questo pacchetto è la parte deliverable di un lavoro di tesi magistrale.
+Rileva traffico di rete anomalo. Analizza i flussi esportati da
+nProbe (formato NetFlow v3) e segnala quelli sospetti, spiegando per ciascun
+allarme quali caratteristiche lo hanno fatto scattare. Funziona su una macchina
+comune, senza scheda grafica.
+
+ 1. COSA C'È NELLA CARTELLA
+--------------------------------------------------------------------------------
+  install.sh     script bash di installazione: crea i venv e scompatta i dataset .7z
+  infer.py       il programma di inferenza (rileva le anomalie)
+  train.py       il programma di riaddestramento dei modelli
+  main.py       menu interattivo (./main.py) — interazione semplificata
+
+  dati/          contiene i dataset csv (inferenza/ addestramento/ benchmark/)
+  modelli/       contiene i modelli addestrati (e preaddestrati)
+  sniffing/      lo script di cattura del traffico con nProbe
+                 è la destinazione del traffico sniffato da nProbe
+
+  I tre dataset più grandi (oltre il limite di 100 MB per file di GitHub) sono
+  distribuiti come archivi .7z dentro dati/. Per scompattarli e verificarne gli
+  sha256:
+    bash install.sh dati      (oppure "all"; senza argomenti chiede per ognuno)
+  Serve 7-Zip (Debian/Ubuntu: sudo apt install p7zip-full). Su Windows gli
+  archivi si aprono con 7-Zip o, su Windows 11, con Esplora file.
+
+
+ 2. LA MODALITÀ DI ALLARME
+--------------------------------------------------------------------------------
+  Modalità A — FPR minimo (predefinita)
+     Pochi allarmi, quasi tutti veri. Un allarme in modalità A significa che
+     ENTRAMBI i controlli interni concordano: è un segnale forte. È la regola
+     descritta nella tesi, con un unico punto operativo calibrato sui benigni.
+
+
+ 3. CREAZIONE DATASET LOCALE
+--------------------------------------------------------------------------------
+In caso di deploy reale bisogna effettuare uno sniffing del traffico della LAN
+di deploy. In fase laboratoriale è stato sniffato il traffico per una settimana
+collegando il PC di sniffing a uno switch di rete (ZYXEL GS1200-5v3) impostato
+con in port-mirroring tra router e resto della LAN, in modo da catturare tutto
+il traffico in transito. È possibile limitarsi a sniffare il traffico sul solo
+PC di sniffing, ma in tal caso avrà prestazioni inferiori.
+
+I file prodotti vanno poi uniti in un singolo .csv, usare
+  ./main.py -> "Cattura"    (oppure: bash sniffing/cattura.sh)
+
+oppure direttamente i due script bash presenti in sniffing/
+  ./sniffing/cattura.sh
+  ./sniffing/unione.sh
+
+
+  4. INFERENZA
+--------------------------------------------------------------------------------
+Si può testare immediatamente il programma usando main.py o gli script
+infer.py e train.py con opportuni flag
+
+Analisi in batch su un file già catturato:
+  ./infer.py --batch ./dati/inferenza/nomefile.csv --mode A
+
+Analisi in tempo reale, sulla rete (richiede nProbe installato):
+  ./infer.py --live --mode A
+
+Ogni allarme mostra: l'istante d'inizio del flusso (ISO 8601, UTC; se il campo
+manca, l'ora di emissione, segnalata nella riga), IP sorgente e destinazione con
+la porta di destinazione, il protocollo, il ramo della regola che lo ha fatto
+scattare ("consenso" dei due stadi o "solo primo stadio") e le caratteristiche
+più anomale del flusso, raggruppate per famiglia (porta, volumi, flag TCP,
+ICMP...). I colori compaiono solo in console: alert.log è testo semplice.
+
+ 4. RIADDESTRAMENTO
+--------------------------------------------------------------------------------
+Vi sono modelli preaddestrati su traffico di laboratorio (CSE e UNSW).
+Riaddestrare sul traffico di deploy è fondamentale.
+Il riaddestramento è automatico:
+- non bisogna etichettare nulla
+- nè bisogna conoscere sapere quali flussi siano attacchi.
+
+Il programma non ha bisogno di label: decide autonomamente quando fermarsi
+in base a EntropyStop e PseudoAnomalie.
+Nota: il riaddestramento rinnova i PESI dei due stadi sul traffico locale;
+l'ordine delle feature, lo scaler e le trasformazioni log restano quelli
+calibrati in laboratorio sui benigni CSE (--weights-src), un prior fisso del
+preprocessing.
+Nota 2: la valutazione con cui EntropyStop decide quando fermarsi usa il
+prefisso temporale della cattura (circa il 22% iniziale): un fenomeno assente
+dal prefisso non influenza l'arresto — limite noto del retrain.
+
+  mkdir -p modelli/sperimentali/lan_seed42
+  ./train.py --dataset ./dati/addestramento/nomefile.csv --out-dir modelli/sperimentali/lan_seed42 --seed 42
+  (la cartella va creata prima; infer.py cerca i modelli SOLO in modelli/produzione/ e
+  modelli/sperimentali/, quindi l'out-dir deve stare lì — v. il comando d'uso più sotto)
+oppure, più comodo:
+  ./main.py -> "Riaddestramento")
+
+- SERVE UNA MACCHINA DA ALMENO 16 GB DI RAM.
+  Il riaddestramento si RIFIUTA di partire sotto i 16 GB: il solo motore di
+  calcolo ne occupa circa 2 GB e ogni seed ne chiede circa 5, quindi su una
+  macchina più piccola il lavoro verrebbe killato a metà strada dopo ore.
+  Nessuna opzione può aggirarlo: serve più memoria, oppure si riaddestra su
+  un'altra macchina e si copia il modello prodotto in modelli/. Il blocco vale
+  sia dal menu di main.py sia lanciando ./train.py direttamente.
+
+  L'INFERENZA invece non ha questo requisito: gira in circa 50 MB e funziona
+  bene anche su macchine modeste. Solo il riaddestramento è esigente.
+
+- ADDESTRAMENTO MULTISEED IN PARALLELO.
+  Lo script main.py rileva automaticamente la RAM di sistema e dimensiona il
+  numero di seed paralleli su cui addestrare i modelli. Questo significa che
+  minor RAM->minor numero di seed->minori prestazioni di rilevazione, dato
+  che si ha una probabilità inferiore di trovare il seed ottimale.
+
+  Sul PC di sviluppo con 64GiB di RAM sono possibili 10 addestramenti
+  contemporanei (su circa 3 milioni di flussi). Erano 6 prima del lavoro di
+  contenimento della memoria del 2026-07-20, che ha ridotto il costo per seed
+  da circa 14 GB a circa 5.
+
+  Si può usare main.py --n-seeds per specificare manualmente il numero di semi
+  (train.py addestra un seme solo, scelto con --seed). In tal caso potrebbero
+  essere necessari più turni di addestramento, allungando notevolmente i tempi.
+
+  Sul PC di sviluppo il tempo totale di addestramento è di circa un'ora.
+
+- QUANTI DATI SERVONO.
+  Sotto 500.000 flussi il programma avvisa che la qualità
+  cala; sotto 100.000 si ferma (puoi forzarlo con --force, ma è sconsigliato).
+
+  Dopo il riaddestramento usa il tuo modello:
+    ./infer.py --batch traffico.csv --mode A --model lan_seed42
+
+
+================================================================================

@@ -1,0 +1,8 @@
+# Usa il DAE riaddestrato sui benigni UNSW (seed 2024) e fitta whitening e z-scaler sui benigni UNSW.
+# Il PA va riaddestrato nello spazio UNSW risultante; non usare il DAE CSE congelato.
+weights: runs/unsw_local/results/569_seed2024.weights.h5
+val_dir: runs/unsw_local/data
+val_attack: runs/dae/output_569_unsw/val_attack.npy
+test_dir: runs/unsw_local/data
+out_dir: runs/dae/output_569_unsw_retrain
+threads: 16

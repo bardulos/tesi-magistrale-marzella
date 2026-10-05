@@ -1,0 +1,8 @@
+# Output del DAE #569, seed 2034; standalone, non è il secondo stadio.
+# Esegui con tools/dae_output_cache.py.
+weights: runs/dae/loao_fase3/weights/569/seed_2034.weights.h5
+val_dir: <HOME>/dae_data_91
+val_attack: runs/preprocessing/val_attack_npy/val_Attack.npy
+test_dir: runs/preprocessing/test_npy
+out_dir: runs/dae/output_569
+threads: 8

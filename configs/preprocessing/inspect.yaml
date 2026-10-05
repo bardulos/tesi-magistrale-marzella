@@ -1,0 +1,5 @@
+# Statistiche per colonna sul CSV raw. Default CSE; per UNSW usare --override dataset=unsw.
+stage: inspect
+
+dataset: cse
+out_dir: runs/preprocessing/inspect_cse

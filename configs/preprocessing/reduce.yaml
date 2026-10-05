@@ -1,0 +1,7 @@
+# Reduce encoded in post_audit; rimuove le feature escluse e aggiunge has_ttl/has_tcp_win_out.
+# Default CSE; per UNSW sovrascrivere primary, schema_from e out_dir.
+stage: reduce
+
+primary: runs/preprocessing/encode_cse/cse_encoded.parquet
+schema_from: runs/preprocessing/encode_cse/feature_types.json
+out_dir: runs/preprocessing/reduce_cse

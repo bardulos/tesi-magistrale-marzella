@@ -1,0 +1,6 @@
+# Statistiche per-feature raw (richiede Label); scrive feature_stats.json in out_dir.
+# Default CSE; per UNSW sovrascrivere dataset e out_dir.
+stage: stats
+
+dataset: cse
+out_dir: runs/preprocessing/stats_cse
